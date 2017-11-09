@@ -116,17 +116,15 @@ class GrabBagContainer extends Component {
      * @returns {XML}
      */
     genListItem = (item, index, data, onClick, isGrabBag=false) => {
-        if (data.name === undefined) {
-            return ( <span key={index}></span> );
-        }
         return (
-                                <div className='col-xs-12 col-sm-6 col-lg-4' key={index}>
+                                <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={index}>
                                     <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
-                                        <div className='dozuki_grabbag_device_list_section_item_title' title={data.name}>
-                                            {data.children ? <i className='fa fa-folder-o pull-left' /> : data.myDeviceId ? <i className='fa fa-minus pull-left' /> : <i className='fa fa-plus pull-left' />}
+                                        <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
                                             &nbsp;{data.name}
                                         </div>
-                                        <div className='dozuki_grabbag_device_list_section_item_body'><img className='dozuki_grabbag_device_list_section_item_image' src={data.img} alt='' /></div>
+                                        <div className='dozuki_grabbag_device_list_section_item_body'>
+                                            <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={data.img} alt='' />
+                                        </div>
                                     </div>
                                 </div>
         );
@@ -154,13 +152,13 @@ class GrabBagContainer extends Component {
 
                 if (parsed.children !== undefined) {
                     parsed.children.forEach((child) => {
-                        currentSubCategories[child] = [];
                         const infoURL = 'https://www.ifixit.com/api/2.0/categories/' + encodeURIComponent(child);
+                        currentSubCategories[child] = [];
                         request.get(infoURL, function (error2, response2, body2) {
                             if (!error2 && response2.statusCode === 200) {
                                 let parsedInfo = JSON.parse(body2);
                                 if (parsedInfo['image'] !== 'undefined' && parsedInfo['image'] !== null) {
-                                    currentSubCategories[child] = new historyItem({catName: child, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['standard'], catChildren: parsedInfo.children.length});
+                                    currentSubCategories[child] = new historyItem({catName: child, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['thumbnail'], catChildren: parsedInfo.children.length});
                                 } else {
                                     currentSubCategories[child] = new historyItem({catName: child, imgId: '', imgGuid: '', imgUrl: '/images/DeviceNoImage_300x225.jpg'});
                                 }
@@ -178,7 +176,7 @@ class GrabBagContainer extends Component {
                         request.get(infoURL, function (error2, response2, body2) {
                             if (!error2 && response2.statusCode === 200) {
                                 let parsedInfo = JSON.parse(body2);
-                                currentSubCategories[catName] = new historyItem({catName: catName, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['standard'], catChildren: 1});
+                                currentSubCategories[catName] = new historyItem({catName: catName, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['thumbnail'], catChildren: 1});
                                 localThis.setState({currentSubCategories});
                             } else {
                                 // TODO: Deal with errors better
@@ -192,7 +190,6 @@ class GrabBagContainer extends Component {
                 console.log(error);
             }
         });
-
     };
 
     /**
