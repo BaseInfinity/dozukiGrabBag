@@ -6,6 +6,11 @@
 .dozuki_grabbag_device_list {
     background: inherit;
     padding: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border: solid 1px silver;
+    min-height: 170px;
+    margin-bottom: 20px;
 }
 
 .dozuki_grabbag_device_list_container {
