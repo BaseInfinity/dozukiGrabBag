@@ -1,9 +1,13 @@
 import React, {Component} from 'react';
+import BackItem from './backItem.js';
+import FolderItem from './folderItem.js';
+import DeviceItem from './deviceItem.js';
 
 /**
  * deviceList displays the entire catalog of devices by level; supports navigation through levels, including 'back'.
  */
 class deviceList extends Component {
+
     /**
      * render displays the current category's items.
      *
@@ -12,15 +16,12 @@ class deviceList extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        let back = <div></div>;
+        let back = <div />;
+
         if (this.props.historyStack.length) {
-            back = <div className='col-xs-12 col-sm-6 col-lg-4' key='back'>
-                <div className='dozuki_grabbag_device_list_section_item' name='back' value='back' onClick={this.handleOnClick.bind(this, 'back')}>
-                    <div className='dozuki_grabbag_device_list_section_item_title'>BACK</div>
-                    <div className='dozuki_grabbag_device_list_section_item_body'><img className='dozuki_grabbag_device_list_section_item_image' src='/images/back.png' alt='' /></div>
-                </div>
-            </div>;
+            back = <BackItem onBack={this.onBack.bind(this)} />;
         }
+
         return (
             <div className='dozuki_grabbag_device_list'>
                 <section className='dozuki_grabbag_device_list_section'>
@@ -28,7 +29,15 @@ class deviceList extends Component {
                         <div className="container-fluid">
                             {back}
                             {Object.keys(this.props.grabBagData.currentSubCategories).map((key, index) =>
-                                this.props.genListItem(key, index, this.props.grabBagData.currentSubCategories[key], this.handleOnClick.bind(this, this.props.grabBagData.currentSubCategories[key].name))
+                            this.props.grabBagData.currentSubCategories[key].name !== undefined
+                                ?
+                                this.props.grabBagData.currentSubCategories[key].children
+                                    ?
+                                    <FolderItem key={key} name={this.props.grabBagData.currentSubCategories[key].name} handleOnClick={this.onOpen.bind(this)} img={this.props.grabBagData.currentSubCategories[key].img} />
+                                    :
+                                    <DeviceItem key={key} name={this.props.grabBagData.currentSubCategories[key].name} handleOnClick={this.onAdd.bind(this)} img={this.props.grabBagData.currentSubCategories[key].img} />
+                                :
+                                <span key={key} />
                             )}
                         </div>
                     </div>
@@ -47,6 +56,23 @@ class deviceList extends Component {
         this.props.onChange('currentCategoryName', keyName);
         event.preventDefault();
     }
-}
+
+    onBack(event) {
+        this.props.onChange('currentCategoryName', 'back');
+        event.preventDefault();
+    }
+
+    onOpen(folderName, event) {
+        console.log("open " + folderName);
+        this.props.onChange('currentCategoryName', folderName);
+        event.preventDefault();
+    }
+
+    onAdd(deviceName, event) {
+        console.log("add " + deviceName);
+        this.props.onChange('currentCategoryName', deviceName);
+        if (event !== null)
+            event.preventDefault();
+    }}
 
 export default deviceList;

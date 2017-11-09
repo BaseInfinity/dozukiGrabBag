@@ -1,59 +1,62 @@
-/**
- * deviceItem is a simple class for use in the history stack;  And now it is used in myDevices also.
- */
-class deviceItem {
-    /**
-     * name is the 'name' of the device
-     *
-     * @type {null|string}
-     */
-    name      = null;
-    /**
-     * id is the 'id' of the device
-     *
-     * @type {null|number}
-     */
-    id        = null;
-    /**
-     * guid is the 'guid' of the device
-     *
-     * @type {null|string}
-     */
-    guid      = null;
-    /**
-     * img is the 'standard' image URL for the device
-     *
-     * @type {null|string}
-     */
-    img       = null;
-    /**
-     * children is the amount of children the device has
-     *
-     * Note:
-     * The definition of a device that can be added to the grab bag is a bit wonky.
-     * For now, a grab bag addable device is on that has no children.
-     *
-     * @type {number}
-     */
-    children  = 0;
-    /**
-     * myDeviceId is used by the grab bag to identify grab bag items.
-     *
-     * Note:
-     * This allows us to keep multiples of the same device in the grab bag.
-     *
-     * @type {null|number}
-     */
-    myDeviceId = null;
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { DragSource } from 'react-dnd';
+import ItemTypes from './itemTypes';
 
-    constructor(data) {
-        this.name       = data.catName;
-        this.id         = data.imgId;
-        this.guid       = data.imgGuid;
-        this.img        = data.imgUrl;
-        this.children   = data.catChildren;
-        this.myDeviceId = data.myDeviceId;
+const cardSource = {
+    beginDrag(props) {
+        return {
+            text: props.text
+        };
+    },
+    endDrag(props, monitor) {
+        //const item = monitor.getItem();
+        const dropResult = monitor.getDropResult();
+
+        if (dropResult) {
+            props.handleOnClick(props.name, null);
+        }
+    },
+};
+
+function collect(connect, monitor) {
+    return {
+        connectDragSource: connect.dragSource(),
+        isDragging: monitor.isDragging()
+    };
+}
+
+const propTypes = {
+    name: PropTypes.string.isRequired,
+
+    // Injected by React DnD:
+    isDragging: PropTypes.bool.isRequired,
+    connectDragSource: PropTypes.func.isRequired
+};
+
+class deviceItem extends Component {
+    render() {
+
+        const { connectDragSource, name, img} = this.props;
+
+        return connectDragSource(
+            <div className='col-xs-12 col-sm-6 col-lg-4' key='back'>
+                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.handleOnClick.bind(this)}>
+                    <div className='dozuki_grabbag_device_list_section_item_title' title={name}><i className='fa fa-plus pull-left' />{name}</div>
+                    <div className='dozuki_grabbag_device_list_section_item_body'>
+                        <img className='dozuki_grabbag_device_list_section_item_image' src={img} alt='' />
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    handleOnClick(event) {
+        this.props.handleOnClick(this.props.name, event);
+        event.preventDefault();
     }
 }
 
-export default deviceItem;
+deviceItem.propTypes = propTypes;
+
+export default DragSource(ItemTypes.CARD, cardSource, collect)(deviceItem);

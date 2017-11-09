@@ -1,10 +1,36 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types'
+import { DropTarget } from 'react-dnd'
+import ItemTypes from './itemTypes'
 import '../css/grabBag.css';
 
 // TODO: grab bag needs to support:
-// 1) dropping on dragged items from the device list
-// 2) removing items from the grab bag (click on minus sign; swipe left?)
-// 3) show image, name and description from the catalog
+// 1) removing items from the grab bag (click on minus sign; swipe left?)
+// 2) name and description from the catalog?
+// 3) show link to catalog page?
+
+const cardTarget = {
+    drop() {
+        return { name: 'GrabBag' }
+    },
+};
+
+const propTypes = {
+    connectDropTarget: PropTypes.func.isRequired,
+    isOver: PropTypes.bool.isRequired,
+    canDrop: PropTypes.bool.isRequired,
+};
+
+function collect(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+    };
+}
+const style = {
+    textAlign: 'center',
+};
 
 /**
  * GrabBag is the grab bag container.  It displays the grab bag and it's contents.
@@ -13,7 +39,7 @@ class GrabBag extends Component {
     /**
      * handleOnClick() enables the deleting of items from the grab bag.
      *
-     * @param item {deviceItem} is the device that was clicked on.
+     * @param item {historyItem} is the device that was clicked on.
      * @param event {Object} is the click event.
      */
     static handleOnClick(item, event) {
@@ -28,21 +54,31 @@ class GrabBag extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
+        const { canDrop, isOver, connectDropTarget } = this.props;
+        const isActive = canDrop && isOver;
+
         let noDevices = '';
         if (!this.props.myDevices.length) {
             noDevices = <p>You have no devices at this time.</p>;
         }
 
-        return (
+        let boxShadow = '';
+        if (isActive) {
+            boxShadow = '0 0 2px green';
+        } else if (canDrop) {
+            boxShadow = '0 0 2px yellow';
+        }
+
+        return connectDropTarget(
             <div className='dozuki_grabbag_container'>
                 <h3>Your Devices</h3>
-                {noDevices}
-                <div className='dozuki_grabbag_device_list'>
+                <div className='dozuki_grabbag_device_list' style={{ ...style, boxShadow }}>
+                    {noDevices}
                     <section className='dozuki_grabbag_device_list_section'>
                         <div className="row" role="row">
                             <div className="container-fluid">
                                 {this.props.myDevices.map((key, index) =>
-                                    this.props.genListItem(key, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]))
+                                    this.props.genListItem(key.name, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]), true)
                                 )}
                             </div>
                         </div>
@@ -53,4 +89,6 @@ class GrabBag extends Component {
     }
 }
 
-export default GrabBag;
+GrabBag.propTypes = propTypes;
+
+export default DropTarget(ItemTypes.CARD, cardTarget, collect)(GrabBag);
