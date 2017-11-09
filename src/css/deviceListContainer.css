@@ -5,7 +5,7 @@
 
 .dozuki_grabbag_device_list {
     background: inherit;
-    padding: 10px;
+    padding: 10px 10px 20px;
     margin-left: 20px;
     margin-right: 20px;
     border: solid 1px silver;
@@ -17,12 +17,16 @@
     background: white;
 }
 
+.dozuki_grabbag_device_list_item_container {
+    padding: 0 5px;
+}
+
 .dozuki_grabbag_device_list_section_item {
     /*  border: solid 1px black; */
     min-height: 100px;
     margin-top: 10px;
     margin-right: 5px;
-    background-color: white;
+    background-color: #e0e0e0;
     padding: 0;
     box-shadow: 2px 2px 3px gray;
     min-width: 100px;
@@ -35,23 +39,34 @@
     vertical-align: middle;
     font-size: .9em;
     line-height: 35px;
-    color: #333;
+    color: #888;
+    font-weight: bold;
     -webkit-transition: background .2s, color .2s;
     transition: background .2s, color .2s;
+    text-shadow: 1px 1px 1px #fafafa;
 }
 
 .dozuki_grabbag_device_list_section_item:hover .dozuki_grabbag_device_list_section_item_title {
-    background-color: #0071ce;
-    color: white;
+    color: #555;
+    text-shadow: 1px 1px 1px #f0f0f0;
 }
 
 .dozuki_grabbag_device_list_section_item_image {
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all .15s ease-in-out;
+    transition: all .15s ease-in-out;
     transform: scale(.8);
     width: 100%;
-    max-width: 120px;
+    max-width: 60px;
 }
+
+.dozuki_grabbag_device_list_section_item_folder_image {
+    margin-top: 5px;
+}
+
+.dozuki_grabbag_device_list_section_item_device_image {
+    margin-top: 2px;
+}
+
 
 .dozuki_grabbag_device_list_section_item:hover .dozuki_grabbag_device_list_section_item_image {
     transform: scale(.9);
@@ -59,5 +74,35 @@
 
 .dozuki_grabbag_device_list_section_item_body {
     padding-top: 5px;
-    background-color: white;
+    background-color: #e0e0e0;
+}
+
+.dozuki_grabbag_device_list_folder_container:after {
+    content: "\f07b";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    position: absolute;
+    font-size: 6.5em;
+    color: white;
+    top: 50%;
+    left: 50%;
+    margin: 2px 0 0 -40px;
+    text-shadow: 2px 2px 2px silver;
+}
+
+.dozuki_grabbag_device_list_device_container:after {
+    content: "\f0c8";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    position: absolute;
+    font-size: 5.3em;
+    color: white;
+    top: 50%;
+    left: 50%;
+    margin: 2px 0 0 -32px;
+    text-shadow: 2px 2px 2px silver;
 }
