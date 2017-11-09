@@ -1,7 +1,7 @@
 /**
- * categoryInfo is a simple class for use in the history stack;  And now it is used in myDevices also.
+ * deviceItem is a simple class for use in the history stack;  And now it is used in myDevices also.
  */
-class categoryInfo {
+class deviceItem {
     /**
      * name is the 'name' of the device
      *
@@ -56,4 +56,4 @@ class categoryInfo {
     }
 }
 
-export default categoryInfo;
+export default deviceItem;

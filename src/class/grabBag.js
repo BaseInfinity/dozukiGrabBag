@@ -13,7 +13,7 @@ class GrabBag extends Component {
     /**
      * handleOnClick() enables the deleting of items from the grab bag.
      *
-     * @param item {categoryInfo} is the device that was clicked on.
+     * @param item {deviceItem} is the device that was clicked on.
      * @param event {Object} is the click event.
      */
     static handleOnClick(item, event) {

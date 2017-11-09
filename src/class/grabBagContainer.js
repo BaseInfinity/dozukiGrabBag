@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import request from 'request';
-import categoryInfo from './categoryInfo.js';
+import deviceItem from './deviceItem.js';
 import DeviceListContainer from './deviceListContainer.js';
 import GrabBag from './grabBag.js';
 
@@ -59,7 +59,7 @@ class GrabBagContainer extends Component {
                     request.get(infoURL, function (error2, response2, body2) {
                         if (!error2 && response2.statusCode === 200) {
                             let parsedInfo = JSON.parse(body2);
-                            currentSubCategories[catName] = new categoryInfo({
+                            currentSubCategories[catName] = new deviceItem({
                                   catName: catName
                                 , imgId: parsedInfo['image']['id']
                                 , imgGuid: parsedInfo['image']['guid']
@@ -156,9 +156,9 @@ class GrabBagContainer extends Component {
                             if (!error2 && response2.statusCode === 200) {
                                 let parsedInfo = JSON.parse(body2);
                                 if (parsedInfo['image'] !== 'undefined' && parsedInfo['image'] !== null) {
-                                    currentSubCategories[child] = new categoryInfo({catName: child, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['standard'], catChildren: parsedInfo.children.length});
+                                    currentSubCategories[child] = new deviceItem({catName: child, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['standard'], catChildren: parsedInfo.children.length});
                                 } else {
-                                    currentSubCategories[child] = new categoryInfo({catName: child, imgId: '', imgGuid: '', imgUrl: '/images/DeviceNoImage_300x225.jpg'});
+                                    currentSubCategories[child] = new deviceItem({catName: child, imgId: '', imgGuid: '', imgUrl: '/images/DeviceNoImage_300x225.jpg'});
                                 }
                                 localThis.setState({currentSubCategories});
                             } else {
@@ -174,7 +174,7 @@ class GrabBagContainer extends Component {
                         request.get(infoURL, function (error2, response2, body2) {
                             if (!error2 && response2.statusCode === 200) {
                                 let parsedInfo = JSON.parse(body2);
-                                currentSubCategories[catName] = new categoryInfo({catName: catName, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['standard'], catChildren: 1});
+                                currentSubCategories[catName] = new deviceItem({catName: catName, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['standard'], catChildren: 1});
                                 localThis.setState({currentSubCategories});
                             } else {
                                 // TODO: Deal with errors better
