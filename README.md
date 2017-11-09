@@ -10,6 +10,7 @@ In general, list devices and let the user add them to their grab bag.  Client si
 2. Folder vs. Device could be clearer is the device list.
 3. Need to support Drag and Drop per the spec!
 4. Add unit testing!
+5. Can I use Flow?
 
 
 # 'create-react-app' Details
