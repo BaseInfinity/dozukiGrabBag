@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
  *  @type {{onBack: (*)}}
  */
 const propTypes = {
-    onBack: PropTypes.func.isRequired
+    onItemClick: PropTypes.func.isRequired
 };
 
 /**
@@ -22,7 +22,7 @@ class backItem extends Component {
     render() {
         return (
              <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key='back'>
-                 <div className='dozuki_grabbag_device_list_section_item' name='back' value='back' onClick={this.handleOnClick.bind(this)}>
+                 <div className='dozuki_grabbag_device_list_section_item' name='back' value='back' onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title'>BACK</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
                         <img className='dozuki_grabbag_device_list_section_item_image' src='/images/back.png' alt='' />
@@ -37,9 +37,10 @@ class backItem extends Component {
      *
      * @param event {object} is the click event.
      */
-    handleOnClick(event) {
-        const {onBack} = this.props;
-        onBack(event);
+    onItemClick(event) {
+        const {onItemClick} = this.props;
+
+        onItemClick('back');
         event.preventDefault();
     }
 }
