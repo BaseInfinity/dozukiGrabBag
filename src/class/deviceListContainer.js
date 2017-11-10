@@ -32,7 +32,7 @@ class deviceListContainer extends Component {
     }
 
     /**
-     * render() displays the device list container and the device list.
+     * render() generates the device list container HTML, including the device list.
      *
      * @returns {XML} is the content to render; Using React JSX.
      */
@@ -59,25 +59,23 @@ class deviceListContainer extends Component {
         const {grabBagData, addDevice, changeCategory, updateCurrentSubCategories} = this.props;
         const {historyStack} = this.state;
 
-        // TODO : Am I mutating wrong here?
-
         let newCategory = '';
         if ('back' === value) {
-            // going up
+            // to parent
             let previous = historyStack.pop();
             if (previous !== null && previous !== undefined) {
                 changeCategory(previous);
                 newCategory = previous;
             }
         } else {
-            /* only check for add if not 'back' */
-            /* only allow to add tips... this is my definition of a 'device'... could use improvement */
+             // only check for add if not 'back'
+             // only allow to add tips... this is my definition of a 'device'... could use improvement
             if (!grabBagData.currentSubCategories[value].children) {
                 addDevice(value);
                 return;
             }
 
-            // going down...
+            // to child
             historyStack.push(grabBagData.currentCategoryName);
             this.setState({historyStack: historyStack});
             changeCategory(value);
