@@ -19,6 +19,7 @@
 
 .dozuki_grabbag_device_list_item_container {
     padding: 0 5px;
+    cursor: pointer;
 }
 
 .dozuki_grabbag_device_list_section_item {
