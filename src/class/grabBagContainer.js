@@ -35,7 +35,7 @@ class GrabBagContainer extends Component {
         this.localStorageIn();
 
         /* grab the data for the device list */
-        this.state.dataAPI.getData(this);
+        this.state.dataAPI.getCategoryData(this);
     }
 
     /**
@@ -44,7 +44,7 @@ class GrabBagContainer extends Component {
      * @param newCategory
      */
     updateCurrentSubCategories(newCategory) {
-        this.state.dataAPI.updateCurrentSubCategories(newCategory, this)
+        this.state.dataAPI.getSubCategoryData(newCategory, this)
     };
 
     /**
@@ -63,7 +63,7 @@ class GrabBagContainer extends Component {
                             <GrabBag myDevices={myDevices}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
-                            <DeviceListContainer addDevice={this.addDevice} changeCategory={this.changeCategory} updateCurrentSubCategories={this.updateCurrentSubCategories} grabBagData={this.state}></DeviceListContainer>
+                            <DeviceListContainer addDevice={this.addDevice.bind(this)} changeCategory={this.changeCategory.bind(this)} updateCurrentSubCategories={this.updateCurrentSubCategories.bind(this)} grabBagData={this.state}></DeviceListContainer>
                         </div>
                     </div>
                 </div>
