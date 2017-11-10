@@ -84,54 +84,6 @@ class GrabBagContainer extends Component {
 
     /**
      *
-     * @param deviceName
-     */
-    addDevice = (deviceName) => {
-        let device        = this.state.currentSubCategories[deviceName];
-        device.myDeviceId = this.state.nextDeviceId;
-        this.state.myDevices.push(device);
-        let nextDeviceId = parseInt(device.myDeviceId, 10) + 1;
-        this.setState({myDevices: this.state.myDevices, nextDeviceId: nextDeviceId});
-
-        if (typeof(Storage) !== 'undefined') {
-            localStorage.setItem('dozuki_grabbag_mydevices', JSON.stringify(this.state.myDevices));
-            localStorage.setItem('dozuki_grabbag_nextdeviceid', nextDeviceId);
-        }
-    };
-
-    /**
-     *
-     * @param newCategory
-     */
-    changeCategory = (newCategory) => {
-        this.setState({currentCategoryName: newCategory, currentSubCategories: []});
-    };
-
-    /**
-     *
-     * @param item
-     * @param index
-     * @param data
-     * @param onClick
-     * @returns {XML}
-     */
-    genListItem = (item, index, data, onClick, isGrabBag=false) => {
-        return (
-                                <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={index}>
-                                    <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
-                                        <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
-                                            &nbsp;{data.name}
-                                        </div>
-                                        <div className='dozuki_grabbag_device_list_section_item_body'>
-                                            <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={data.img} alt='' />
-                                        </div>
-                                    </div>
-                                </div>
-        );
-    };
-
-    /**
-     *
      * @param newCategory
      */
     updateCurrentSubCategories = (newCategory) => {
@@ -202,7 +154,7 @@ class GrabBagContainer extends Component {
                 <div className="container-fluid">
                     <div className="row" role="row">
                         <div className="col-xs-12 col-sm-6">
-                            <GrabBag myDevices={this.state.myDevices} genListItem={this.genListItem}></GrabBag>
+                            <GrabBag myDevices={this.state.myDevices}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
                             <DeviceListContainer addDevice={this.addDevice} changeCategory={this.changeCategory} updateCurrentSubCategories={this.updateCurrentSubCategories} grabBagData={this.state}></DeviceListContainer>
@@ -212,6 +164,32 @@ class GrabBagContainer extends Component {
             </DragDropContextProvider>
         );
     }
+
+    /**
+     * addDevice() - Adds a device to the grab bag.  Will store in local web storage if available.
+     *
+     * @param deviceName
+     */
+    addDevice = (deviceName) => {
+        const {nextDeviceId, currentSubCategories, myDevices} = this.state;
+        let device           = currentSubCategories[deviceName];
+        device.myDeviceId    = nextDeviceId;
+
+        myDevices.push(device);
+        this.setState({myDevices: this.state.myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
+        if (typeof(Storage) !== 'undefined') {
+            localStorage.setItem('dozuki_grabbag_mydevices', JSON.stringify(myDevices));
+            localStorage.setItem('dozuki_grabbag_nextdeviceid', nextDeviceId);
+        }
+    };
+
+    /**
+     *
+     * @param newCategory
+     */
+    changeCategory = (newCategory) => {
+        this.setState({currentCategoryName: newCategory, currentSubCategories: []});
+    };
 }
 
 export default GrabBagContainer;

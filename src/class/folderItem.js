@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 const propTypes = {
     name: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
-    handleOnClick: PropTypes.func.isRequired
+    onItemClick: PropTypes.func.isRequired
 };
 
 /**
@@ -28,7 +28,7 @@ class folderItem extends Component {
 
         return (
             <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key='back'>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.handleOnClick.bind(this)}>
+                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_folder_container' title={name}>{name}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
                         <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_folder_image' src={img} alt='' />
@@ -39,14 +39,14 @@ class folderItem extends Component {
     }
 
     /**
-     * handleOnClick() passes the event up to the parent.
+     * onItemClick() passes the event up to the parent.
      *
      * @param event {object} is the click event.
      */
-    handleOnClick(event) {
-        const {name, handleOnClick} = this.props;
+    onItemClick(event) {
+        const {name, onItemClick} = this.props;
 
-        handleOnClick(name, event);
+        onItemClick(name, event);
         event.preventDefault();
     }
 }

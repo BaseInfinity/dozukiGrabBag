@@ -78,7 +78,7 @@ class GrabBag extends Component {
                         <div className="row" role="row">
                             <div className="container-fluid">
                                 {this.props.myDevices.map((key, index) =>
-                                    this.props.genListItem(key.name, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]), true)
+                                    this.genListItem(key.name, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]), true)
                                 )}
                             </div>
                         </div>
@@ -87,6 +87,29 @@ class GrabBag extends Component {
             </div>
         );
     }
+
+    /**
+     *
+     * @param item
+     * @param index
+     * @param data
+     * @param onClick
+     * @returns {XML}
+     */
+    genListItem = (item, index, data, onClick, isGrabBag=false) => {
+        return (
+            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={index}>
+                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
+                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
+                        &nbsp;{data.name}
+                    </div>
+                    <div className='dozuki_grabbag_device_list_section_item_body'>
+                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={data.img} alt='' />
+                    </div>
+                </div>
+            </div>
+        );
+    };
 }
 
 GrabBag.propTypes = propTypes;

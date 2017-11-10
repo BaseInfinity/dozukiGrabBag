@@ -53,10 +53,9 @@ class deviceListContainer extends Component {
      *
      * It decided if it should drill down, drill up or add the item to the grab bag.
      *
-     * @param field is the name of the value to update; not used right now.
      * @param value is the name of the list item that was clicked on.
      */
-    onChange(field, value) {
+    onChange(value) {
         const {grabBagData, addDevice, changeCategory, updateCurrentSubCategories} = this.props;
         const {historyStack} = this.state;
 
@@ -65,7 +64,7 @@ class deviceListContainer extends Component {
         let newCategory = '';
         if ('back' === value) {
             // going up
-            let previous = this.state.historyStack.pop();
+            let previous = historyStack.pop();
             if (previous !== null && previous !== undefined) {
                 changeCategory(previous);
                 newCategory = previous;

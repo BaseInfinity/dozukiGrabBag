@@ -29,7 +29,7 @@ class deviceList extends Component {
 
         let back = <div />;
         if (historyStack.length) {
-            back = <BackItem onBack={this.onBack.bind(this)} />;
+            back = <BackItem onItemClick={this.onItemClick.bind(this)} />;
         }
 
         return (
@@ -43,9 +43,9 @@ class deviceList extends Component {
                                 ?
                                 grabBagData.currentSubCategories[key].children
                                     ?
-                                    <FolderItem key={key} name={grabBagData.currentSubCategories[key].name} handleOnClick={this.onOpen.bind(this)} img={grabBagData.currentSubCategories[key].img} />
+                                    <FolderItem key={key} name={grabBagData.currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={grabBagData.currentSubCategories[key].img} />
                                     :
-                                    <DeviceItem key={key} name={grabBagData.currentSubCategories[key].name} handleOnClick={this.onAdd.bind(this)} img={grabBagData.currentSubCategories[key].img} />
+                                    <DeviceItem key={key} name={grabBagData.currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={grabBagData.currentSubCategories[key].img} />
                                 :
                                 <span key={key} />
                             )}
@@ -57,41 +57,14 @@ class deviceList extends Component {
     }
 
     /**
-     * onBack() handles a back item click
-     * @param event
-     */
-    onBack(event) {
-        const {onChange} = this.props;
-
-        onChange('currentCategoryName', 'back');
-        event.preventDefault();
-    }
-
-    /**
-     * onOpen() handles a folder item click
+     * onItemClick() handles a device list item click
      *
-     * @param folderName
-     * @param event
+     * @param name {string} is the name of the item that was clicked
      */
-    onOpen(folderName, event) {
+    onItemClick(name) {
         const {onChange} = this.props;
 
-        onChange('currentCategoryName', folderName);
-        event.preventDefault();
-    }
-
-    /**
-     * onAdd() handles a device item click
-     *
-     * @param deviceName
-     * @param event
-     */
-    onAdd(deviceName, event) {
-        const {onChange} = this.props;
-
-        onChange('currentCategoryName', deviceName);
-        if (event !== null)
-            event.preventDefault();
+        onChange(name);
     }
 }
 

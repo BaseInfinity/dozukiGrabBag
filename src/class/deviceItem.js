@@ -19,7 +19,7 @@ const cardSource = {
         const dropResult = monitor.getDropResult();
 
         if (dropResult) {
-            props.handleOnClick(props.name, null);
+            props.onItemClick(props.name, null);
         }
     },
 };
@@ -45,7 +45,7 @@ function collect(connect, monitor) {
  */
 const propTypes = {
     name: PropTypes.string.isRequired,
-
+    onItemClick: PropTypes.func.isRequired,
     // Injected by React DnD:
     isDragging: PropTypes.bool.isRequired,
     connectDragSource: PropTypes.func.isRequired
@@ -65,7 +65,7 @@ class deviceItem extends Component {
 
         return connectDragSource(
             <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container'>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.handleOnClick.bind(this)}>
+                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={name}>{name}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
                         <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_image' src={img} alt='' />
@@ -76,14 +76,14 @@ class deviceItem extends Component {
     }
 
     /**
-     * handleOnClick() passes the event up to the parent.
+     * onItemClick() passes the event up to the parent.
      *
      * @param event {object} is the click event.
      */
-    handleOnClick(event) {
-        const {name, handleOnClick} = this.props;
+    onItemClick(event) {
+        const {name, onItemClick} = this.props;
 
-        handleOnClick(name, event);
+        onItemClick(name, event);
         event.preventDefault();
     }
 }
