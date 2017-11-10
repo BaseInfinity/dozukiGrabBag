@@ -57,7 +57,7 @@ class deviceList extends Component {
     }
 
     /**
-     *
+     * onBack() handles a back item click
      * @param event
      */
     onBack(event) {
@@ -68,6 +68,7 @@ class deviceList extends Component {
     }
 
     /**
+     * onOpen() handles a folder item click
      *
      * @param folderName
      * @param event
@@ -80,6 +81,7 @@ class deviceList extends Component {
     }
 
     /**
+     * onAdd() handles a device item click
      *
      * @param deviceName
      * @param event
