@@ -58,7 +58,7 @@ class GrabBag extends Component {
         const isActive = canDrop && isOver;
 
         let noDevices = '';
-        if (!this.props.myDevices.length) {
+        if (!this.props.myDevices || !this.props.myDevices.length) {
             noDevices = <p>You have no devices at this time.</p>;
         }
 

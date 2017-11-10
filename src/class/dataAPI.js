@@ -1,114 +1,98 @@
 import request from 'request';
 import historyItem from './historyItem.js';
 
-// TODO: This is mess.  I need to clean up the API calls and deal with the 429 errors (to many calls; need to throttle)
-class dataAPI {
-    /**
-     *
-     * @param parent
-     */
-    getData(parent) {
-        /* get data from the 'ifixit' category API */
-        const dataURL = 'https://www.ifixit.com/api/2.0/categories';
-        let localThis = parent;  // Use a promise method so I don't have to do this? axios?
+const baseURL = 'https://www.ifixit.com/api/2.0/categories';
 
+// TODO: need to sort the results
+
+/**
+ * dataAPI
+ */
+class dataAPI {
+
+    /**
+     * getDataFromURL()
+     *
+     * @param dataURL
+     * @param callback
+     */
+    getDataFromURL(dataURL, callback) {
         request.get(dataURL, function (error, response, body) {
             if (!error && response.statusCode === 200) {
-                let parsed         = JSON.parse(body);
-
-                // Just pull the top level out here... we will reload the subcats on change/click
-                // Get the images while we are here, guid and id also for good measure
-                let currentSubCategories = [];
-
-                for (let catName in parsed) {
-                    const infoURL = 'https://www.ifixit.com/api/2.0/categories/' + encodeURIComponent(catName);
-                    currentSubCategories[catName] = [];
-                    request.get(infoURL, function (error2, response2, body2) {
-                        if (!error2 && response2.statusCode === 200) {
-                            let parsedInfo = JSON.parse(body2);
-                            currentSubCategories[catName] = new historyItem({
-                                catName: catName
-                                , imgId: parsedInfo['image']['id']
-                                , imgGuid: parsedInfo['image']['guid']
-                                , imgUrl: parsedInfo['image']['thumbnail']
-                                , catChildren: 1
-                            });
-                            localThis.setState({currentSubCategories});
-                        } else {
-                            // TODO: Deal with errors better
-                            console.log(error);
-                        }
-                    });
-                }
+                callback(JSON.parse(body));
             } else {
-                // TODO: Deal with errors better
+                // TODO: Deal with errors better... try catch?
+                // TODO: deal with the 429 errors (to many calls; need to throttle)
                 console.log(error);
             }
         });
     }
 
     /**
+     * getCategoryData()
+     *
+     * @param client
+     */
+    getCategoryData(client) {
+        this.getDataFromURL(baseURL, (data) => {
+            this.getCategoryChildren(client, data);
+        });
+    }
+
+    storeChildData(client, catName, currentSubCategories) {
+        const infoURL = baseURL + '/' + encodeURIComponent(catName);
+        currentSubCategories[catName] = []; // Response will come back not in order... keep the order by pre-allocating the slot.
+
+        this.getDataFromURL(infoURL, (catData) => {
+            // TODO: Call a method (callback) instead of manipulating the parent!
+            if (catData['image'] !== 'undefined' && catData['image'] !== null) {
+                currentSubCategories[catName] = new historyItem({
+                    catName: catName,
+                    imgId: catData['image']['id'],
+                    imgGuid: catData['image']['guid'],
+                    imgUrl: catData['image']['thumbnail'],
+                    catChildren: catData.children.length
+                });
+            } else {
+                currentSubCategories[catName] = new historyItem({
+                    catName: catName,
+                    imgId: '',
+                    imgGuid: '',
+                    imgUrl: '/images/DeviceNoImage_300x225.jpg'
+                });
+            }
+            client.setState({currentSubCategories});
+        });
+    }
+
+    getCategoryChildren(client, data) {
+        let currentSubCategories = [];
+
+        for (let catName in data) {
+            this.storeChildData(client, catName, currentSubCategories);
+        }
+    }
+
+    /**
      *
      * @param newCategory
-     * @param parent
+     * @param client
      */
-    updateCurrentSubCategories(newCategory, parent) {
-        let localThis = parent;  // Use a promise method so I don't have to do this? axios?
-
-        let dataURL = 'https://www.ifixit.com/api/2.0/categories';
-        if (newCategory && newCategory !== 'All') {
-            dataURL += "/" + encodeURIComponent(newCategory);
-        }
-
-        request.get(dataURL, function (error, response, body) {
-            if (!error && response.statusCode === 200) {
-                let parsed = JSON.parse(body);
-
-                // Just pull the top level out here... we will reload the subcats on change/click
-                // Get the images while we are here, guid and id also for good measure
+    getSubCategoryData(newCategory, client) {
+        if (!newCategory || newCategory === 'All') {
+            this.getCategoryData(client);
+        } else {
+            let dataURL = baseURL + "/" + encodeURIComponent(newCategory);
+            this.getDataFromURL(dataURL, (data) => {
                 let currentSubCategories = [];
 
-                if (parsed.children !== undefined) {
-                    parsed.children.forEach((child) => {
-                        const infoURL = 'https://www.ifixit.com/api/2.0/categories/' + encodeURIComponent(child);
-                        currentSubCategories[child] = [];
-                        request.get(infoURL, function (error2, response2, body2) {
-                            if (!error2 && response2.statusCode === 200) {
-                                let parsedInfo = JSON.parse(body2);
-                                if (parsedInfo['image'] !== 'undefined' && parsedInfo['image'] !== null) {
-                                    currentSubCategories[child] = new historyItem({catName: child, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['thumbnail'], catChildren: parsedInfo.children.length});
-                                } else {
-                                    currentSubCategories[child] = new historyItem({catName: child, imgId: '', imgGuid: '', imgUrl: '/images/DeviceNoImage_300x225.jpg'});
-                                }
-                                localThis.setState({currentSubCategories});
-                            } else {
-                                // TODO: Deal with errors better
-                                console.log(error2);
-                            }
-                        });
+                if (data.children !== undefined) {
+                    data.children.forEach((catName) => {
+                        this.storeChildData(client, catName, currentSubCategories);
                     });
-                } else {
-                    for (let catName in parsed) {
-                        const infoURL = 'https://www.ifixit.com/api/2.0/categories/' + encodeURIComponent(catName);
-                        currentSubCategories[catName] = [];
-                        request.get(infoURL, function (error2, response2, body2) {
-                            if (!error2 && response2.statusCode === 200) {
-                                let parsedInfo = JSON.parse(body2);
-                                currentSubCategories[catName] = new historyItem({catName: catName, imgId: parsedInfo['image']['id'], imgGuid: parsedInfo['image']['guid'], imgUrl: parsedInfo['image']['thumbnail'], catChildren: 1});
-                                localThis.setState({currentSubCategories});
-                            } else {
-                                // TODO: Deal with errors better
-                                console.log(error2);
-                            }
-                        });
-                    }
                 }
-            } else {
-                // TODO: Deal with errors better
-                console.log(error);
-            }
-        });
-
+            });
+        }
     }
 }
 
