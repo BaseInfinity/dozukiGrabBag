@@ -205,7 +205,7 @@ class GrabBagContainer extends Component {
                             <GrabBag myDevices={this.state.myDevices} genListItem={this.genListItem}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
-                            <DeviceListContainer addDevice={this.addDevice} genListItem={this.genListItem} changeCategory={this.changeCategory} updateCurrentSubCategories={this.updateCurrentSubCategories} grabBagData={this.state}></DeviceListContainer>
+                            <DeviceListContainer addDevice={this.addDevice} changeCategory={this.changeCategory} updateCurrentSubCategories={this.updateCurrentSubCategories} grabBagData={this.state}></DeviceListContainer>
                         </div>
                     </div>
                 </div>
