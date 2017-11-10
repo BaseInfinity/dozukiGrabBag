@@ -11,7 +11,7 @@ import DeviceItem from './deviceItem.js';
  */
 const propTypes = {
     grabBagData: PropTypes.object.isRequired,
-    historyStack: PropTypes.object.isRequired,
+    historyStack: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired
 };
 
