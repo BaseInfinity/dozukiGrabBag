@@ -20,6 +20,7 @@
 .dozuki_grabbag_device_list_item_container {
     padding: 0 5px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 .dozuki_grabbag_device_list_section_item {
@@ -31,6 +32,8 @@
     padding: 0;
     box-shadow: 2px 2px 3px gray;
     min-width: 100px;
+    border-radius: 7px;
+    overflow: hidden;
 }
 
 .dozuki_grabbag_device_list_section_item_title {
