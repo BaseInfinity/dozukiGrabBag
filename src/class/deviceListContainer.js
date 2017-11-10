@@ -1,11 +1,24 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import DeviceList from './deviceList.js';
 import '../css/deviceListContainer.css';
 
 /**
+ * propTypes - Setup required properties.
+ *
+ * @type {{grabBagData: (*), addDevice: (*), changeCategory: (*), updateCurrentSubCategories: (*)}}
+ */
+const propTypes = {
+    grabBagData: PropTypes.object.isRequired,
+    addDevice: PropTypes.func.isRequired,
+    changeCategory: PropTypes.func.isRequired,
+    updateCurrentSubCategories: PropTypes.func.isRequired
+};
+
+/**
  * DeviceListContainer is the device list container.  It maintains a history stack and displays the framework around the list.
  */
-class DeviceListContainer extends Component {
+class deviceListContainer extends Component {
     /**
      * constructor declares the history stack (just an array) within the object state.
      *
@@ -19,6 +32,23 @@ class DeviceListContainer extends Component {
     }
 
     /**
+     * render() displays the device list container and the device list.
+     *
+     * @returns {XML} is the content to render; Using React JSX.
+     */
+    render() {
+        const {grabBagData} = this.props;
+        const {historyStack} = this.state;
+
+        return (
+            <div className='dozuki_grabbag_device_list_container'>
+                <h3>Browse Devices</h3>
+                <DeviceList grabBagData={grabBagData} historyStack={historyStack} onChange={this.onChange.bind(this)}/>
+            </div>
+        );
+    }
+
+    /**
      * onChange handles the click event when items are clicks on.
      *
      * It decided if it should drill down, drill up or add the item to the grab bag.
@@ -27,47 +57,40 @@ class DeviceListContainer extends Component {
      * @param value is the name of the list item that was clicked on.
      */
     onChange(field, value) {
+        const {grabBagData, addDevice, changeCategory, updateCurrentSubCategories} = this.props;
+        const {historyStack} = this.state;
+
+        // TODO : Am I mutating wrong here?
+
         let newCategory = '';
         if ('back' === value) {
             // going up
             let previous = this.state.historyStack.pop();
             if (previous !== null && previous !== undefined) {
-                this.props.changeCategory(previous);
+                changeCategory(previous);
                 newCategory = previous;
             }
         } else {
             /* only check for add if not 'back' */
             /* only allow to add tips... this is my definition of a 'device'... could use improvement */
-            if (!this.props.grabBagData.currentSubCategories[value].children) {
-                this.props.addDevice(value);
+            if (!grabBagData.currentSubCategories[value].children) {
+                addDevice(value);
                 return;
             }
 
             // going down...
-            this.state.historyStack.push(this.props.grabBagData.currentCategoryName);
-            this.setState({historyStack: this.state.historyStack});
-            this.props.changeCategory(value);
+            historyStack.push(grabBagData.currentCategoryName);
+            this.setState({historyStack: historyStack});
+            changeCategory(value);
             newCategory = value;
         }
 
         if (newCategory !== '') {
-            this.props.updateCurrentSubCategories(newCategory);
+            updateCurrentSubCategories(newCategory);
         }
-    }
-
-    /**
-     * render() displays the device list container and the device list.
-     *
-     * @returns {XML} is the content to render; Using React JSX.
-     */
-    render() {
-        return (
-            <div className='dozuki_grabbag_device_list_container'>
-                <h3>Browse Devices</h3>
-                <DeviceList genListItem={this.props.genListItem} grabBagData={this.props.grabBagData} historyStack={this.state.historyStack} onChange={this.onChange.bind(this)}/>
-            </div>
-        );
     }
 }
 
-export default DeviceListContainer;
+deviceListContainer.propTypes = propTypes;
+
+export default deviceListContainer;
