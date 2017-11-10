@@ -19,7 +19,7 @@ const propTypes = {
  */
 class folderItem extends Component {
     /**
-     * render() generates the the folder item HTML.
+     * render() generates the folder item HTML.
      *
      * @returns {XML} is the content to render; Using React JSX.
      */
