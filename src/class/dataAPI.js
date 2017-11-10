@@ -39,6 +39,13 @@ class dataAPI {
         });
     }
 
+    /**
+     * storeChildData()
+     *
+     * @param client
+     * @param catName
+     * @param currentSubCategories
+     */
     storeChildData(client, catName, currentSubCategories) {
         const infoURL = baseURL + '/' + encodeURIComponent(catName);
         currentSubCategories[catName] = []; // Response will come back not in order... keep the order by pre-allocating the slot.
@@ -65,6 +72,12 @@ class dataAPI {
         });
     }
 
+    /**
+     * getCategoryChildren()
+     *
+     * @param client
+     * @param data
+     */
     getCategoryChildren(client, data) {
         let currentSubCategories = [];
 
@@ -74,6 +87,7 @@ class dataAPI {
     }
 
     /**
+     * getSubCategoryData()
      *
      * @param newCategory
      * @param client
