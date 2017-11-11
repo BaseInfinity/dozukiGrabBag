@@ -10,7 +10,7 @@ import '../css/deviceListContainer.css';
  */
 const propTypes = {
     currentCategoryName: PropTypes.string.isRequired,
-    currentSubCategories: PropTypes.array.isRequired,
+    currentSubCategories: PropTypes.object.isRequired,
     addDevice: PropTypes.func.isRequired,
     changeCategory: PropTypes.func.isRequired
 };
