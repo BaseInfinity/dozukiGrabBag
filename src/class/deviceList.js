@@ -38,7 +38,11 @@ class deviceList extends Component {
                     <div className="row" role="row">
                         <div className="container-fluid">
                             {back}
-                            {Object.keys(currentSubCategories).map((key, index) =>
+                            {Object.keys(currentSubCategories).sort((a,b) => {
+                                let textA = a.toUpperCase();
+                                let textB = b.toUpperCase();
+                                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                            }).map((key, index) =>
                             currentSubCategories[key].name !== undefined
                                 ?
                                 currentSubCategories[key].children
