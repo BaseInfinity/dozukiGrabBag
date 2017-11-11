@@ -112,9 +112,9 @@ class GrabBag extends Component {
 
         let boxShadow = '';
         if (isActive) {
-            boxShadow = '0 0 2px green';
+            boxShadow = '0 0 4px green';
         } else if (canDrop) {
-            boxShadow = '0 0 2px yellow';
+            boxShadow = '0 0 2px red';
         }
 
         return connectDropTarget(
