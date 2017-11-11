@@ -53,12 +53,34 @@ class GrabBagContainer extends Component {
     }
 
     /**
-     * componentDidMount() attempts to read the grab bag from local storage and attempts to get the data for the device list.
+     * componentDidMount() attempts to read the grab bag from local web storage, and attempts to get the initial tree data for the device list.
      */
     componentDidMount() {
-        /* check to see if they have a grab bag data in their local web storage */
         this.localStorageIn();
+        this.pullInitialTreeDataFromAPI();
+    }
 
+    /**
+     * addDevice() - Adds a device to the grab bag. (myDevices)
+     *
+     * @param deviceName is the name of the device to add
+     */
+    addDevice(deviceName) {
+        const {nextDeviceId, currentSubCategories, myDevices} = this.state;
+        let device         = currentSubCategories[deviceName];
+        device.myDeviceId  = nextDeviceId;
+
+        myDevices.push(device);
+        this.setState({myDevices: this.state.myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
+
+        /* Store the grab bag with the new device in it */
+        this.localStorageOut();
+    }
+
+    /**
+     * pullInitialTreeDataFromAPI()
+     */
+    pullInitialTreeDataFromAPI () {
         /* attempt to get the initial tree data from the api... we call this the baseData */
         this.state.dataAPI.getBaseData((data) => {
             if (data !== null) {
@@ -93,22 +115,6 @@ class GrabBagContainer extends Component {
     }
 
     /**
-     * addDevice() - Adds a device to the grab bag.
-     *
-     * @param deviceName
-     */
-    addDevice(deviceName) {
-        const {nextDeviceId, currentSubCategories, myDevices} = this.state;
-        let device         = currentSubCategories[deviceName];
-        device.myDeviceId  = nextDeviceId;
-
-        myDevices.push(device);
-        this.setState({myDevices: this.state.myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
-
-        this.localStorageOut();
-    }
-
-    /**
      * localStorageOut() will store the grab bag in local web storage, if available.
      */
     localStorageOut() {
@@ -132,7 +138,7 @@ class GrabBagContainer extends Component {
             if (devicesIn !== null && devicesIn !== undefined) {
                 myDevicesIn = JSON.parse(devicesIn);
             }
-            if (myDevicesIn.length) {
+            if (myDevicesIn.length >= 1) {
                 myNextDeviceIdIn = myDevicesIn[myDevicesIn.length - 1].myDeviceId + 1;
             }
         }
@@ -140,19 +146,24 @@ class GrabBagContainer extends Component {
     }
 
     /**
-     * changeCategory()
+     * changeCategory() will cause device list to populate with the new category.
      *
-     * @param newCategory
+     * @param newCategory is the new category the device list is to display
+     * @param historyStack is used to help figure out the location of the category in the tree (baseData).
      */
-    changeCategory(newCategory, historyStack, isBack = false) {
+    changeCategory(newCategory, historyStack) {
+        /* update the current category name, and wipe out the currentSubCategories before repopulating */
         this.setState({currentCategoryName: newCategory, currentSubCategories: {}});
-        this.updateCurrentSubCategories(newCategory, historyStack, isBack);
-    };
+        /* repopulate the currentSubCategories */
+        this.updateCurrentSubCategories(newCategory, historyStack);
+    }
 
     /**
+     * getCategoryImageDataPointer() returns a pointer to the current data point in the tree (baseData)
      *
      * @param historyStack
      * @param newCategory
+     *
      * @returns {*}
      */
     getCategoryImageDataPointer(historyStack, newCategory) {
@@ -169,61 +180,57 @@ class GrabBagContainer extends Component {
     }
 
     /**
+     * cacheCategoryImageData() attempts to pull image data for the current category's children from the API, if needed.
      *
      * @param dataPointer
      */
     cacheCategoryImageData(dataPointer) {
+        let currentSubCategories = {};
 
-        let basePointer = this.state.baseData;
-        let OTHERcurrentSubCategories = [];
-
-        // GET THAT LEVELS DATA IF WE DON"T ALREADY HAVE IT
+        // Get the level's data (if we don't already have it)
         for (let catName in dataPointer) {
-            // if the details data is no there, get it.
+            // if the details data is not there, try to get it.
             if (dataPointer[catName]['details'] === undefined && catName !== 'details') {
                 this.state.dataAPI.getCategoryItem(catName, (dataSub) => {
-                    console.log("updateCurrentSubCategories5", dataSub);
+                    // As the results come back, stash them in the 'details' offset of the associated item in the tree (baseData).
                     dataPointer[catName]['details'] = dataSub;
-
-                    /* Also, populate the currentSubCategories (what the device list displays) while we are here. */
-                    let currentSubCategories = this.state.currentSubCategories;
-                    currentSubCategories[catName] = new historyItem({
-                        catName: catName,
-                        imgId: dataSub['image']['id'],
-                        imgGuid: dataSub['image']['guid'],
-                        imgUrl: dataSub['image']['thumbnail'],
-                        catChildren: dataSub.children.length
-                    });
-                    this.setState({'baseData': basePointer, 'currentSubCategories': currentSubCategories});
-
+                    // Populate the currentSubCategories (what the device list displays).
+                    this.addHistoryItemToCurrentSubCategories(catName, dataSub, currentSubCategories);
                 });
-            } else if (catName !== 'details') {
-                this.setState({'currentSubCategories': {}});
-                /* Also, populate the currentSubCategories (what the device list displays) while we are here. */
-                console.log("updateCurrentSubCategories6", catName);
-                OTHERcurrentSubCategories[catName] = new historyItem({
-                    catName: catName,
-                    imgId: dataPointer[catName]['details']['image']['id'],
-                    imgGuid: dataPointer[catName]['details']['image']['guid'],
-                    imgUrl: dataPointer[catName]['details']['image']['thumbnail'],
-                    catChildren: dataPointer[catName]['details'].children.length
-                });
-                console.log("updateCurrentSubCategories7", this.state.currentSubCategories);
-                this.setState({'currentSubCategories': OTHERcurrentSubCategories});
-                console.log("updateCurrentSubCategories8", this.state.currentSubCategories);
+            } else if (catName !== 'details') { // Don't get image data for the 'details' offset.
+                // Populate the currentSubCategories (what the device list displays).
+                this.addHistoryItemToCurrentSubCategories(catName, dataPointer[catName]['details'], currentSubCategories);
             }
-
         }
     }
 
     /**
-     * updateCurrentSubCategories()... TBD... knows too much about the historyItem TODO!
+     * addHistoryItemToCurrentSubCategories()
+     *
+     * @param catName
+     * @param dataSub
+     * @param currentSubCategories
+     */
+    addHistoryItemToCurrentSubCategories(catName, dataSub, currentSubCategories) {
+        currentSubCategories[catName] = new historyItem({
+            catName: catName,
+            imgId: dataSub['image']['id'],
+            imgGuid: dataSub['image']['guid'],
+            imgUrl: dataSub['image']['thumbnail'],
+            catChildren: dataSub.children.length
+        });
+        this.setState({currentSubCategories});
+    }
+
+    /**
+     * updateCurrentSubCategories()
      *
      * @param newCategory
+     * @param historyStack
      */
-    updateCurrentSubCategories(newCategory, historyStack, isBack) {
+    updateCurrentSubCategories(newCategory, historyStack) {
         if (!newCategory || newCategory === 'All') {
-            let currentSubCategories = [];
+            let currentSubCategories = {};
             for (let catName in this.state.baseData) {
                 this.addSubCategory(this.state.baseData[catName]['details'], currentSubCategories, catName);
             }
@@ -235,6 +242,7 @@ class GrabBagContainer extends Component {
     }
 
     /**
+     * addSubCategory()
      *
      * @param catData
      * @param currentSubCategories
