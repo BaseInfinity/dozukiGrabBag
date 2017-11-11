@@ -36,8 +36,8 @@ class deviceListContainer extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {grabBagData, currentSubCategories} = this.props;
-        const {historyStack} = this.state;
+        const {currentSubCategories} = this.props;
+        const {historyStack}         = this.state;
 
         return (
             <div className='dozuki_grabbag_device_list_container'>

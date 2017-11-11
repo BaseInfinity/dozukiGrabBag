@@ -34,7 +34,7 @@ class GrabBagContainer extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {myDevices, baseData} = this.state;
+        const {myDevices} = this.state;
 
         return (
             <DragDropContextProvider backend={HTML5Backend}>
