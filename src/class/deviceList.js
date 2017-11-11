@@ -25,7 +25,7 @@ class deviceList extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {grabBagData, historyStack} = this.props;
+        const {currentSubCategories, historyStack} = this.props;
 
         let back = <div />;
         if (historyStack.length) {
@@ -38,14 +38,14 @@ class deviceList extends Component {
                     <div className="row" role="row">
                         <div className="container-fluid">
                             {back}
-                            {Object.keys(grabBagData.currentSubCategories).map((key, index) =>
-                            grabBagData.currentSubCategories[key].name !== undefined
+                            {Object.keys(currentSubCategories).map((key, index) =>
+                            currentSubCategories[key].name !== undefined
                                 ?
-                                grabBagData.currentSubCategories[key].children
+                                currentSubCategories[key].children
                                     ?
-                                    <FolderItem key={key} name={grabBagData.currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={grabBagData.currentSubCategories[key].img} />
+                                    <FolderItem key={key} name={currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].img} />
                                     :
-                                    <DeviceItem key={key} name={grabBagData.currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={grabBagData.currentSubCategories[key].img} />
+                                    <DeviceItem key={key} name={currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].img} />
                                 :
                                 <span key={key} />
                             )}

@@ -6,13 +6,12 @@ import '../css/deviceListContainer.css';
 /**
  * propTypes - Setup required properties.
  *
- * @type {{grabBagData: (*), addDevice: (*), changeCategory: (*), updateCurrentSubCategories: (*)}}
+ * @type {{grabBagData: (*), addDevice: (*), changeCategory: (*)}}
  */
 const propTypes = {
     grabBagData: PropTypes.object.isRequired,
     addDevice: PropTypes.func.isRequired,
-    changeCategory: PropTypes.func.isRequired,
-    updateCurrentSubCategories: PropTypes.func.isRequired
+    changeCategory: PropTypes.func.isRequired
 };
 
 /**
@@ -37,13 +36,13 @@ class deviceListContainer extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {grabBagData} = this.props;
+        const {grabBagData, currentSubCategories} = this.props;
         const {historyStack} = this.state;
 
         return (
             <div className='dozuki_grabbag_device_list_container'>
                 <h3>Browse Devices</h3>
-                <DeviceList grabBagData={grabBagData} historyStack={historyStack} onChange={this.onChange.bind(this)}/>
+                <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} onChange={this.onChange.bind(this)}/>
             </div>
         );
     }
@@ -56,34 +55,27 @@ class deviceListContainer extends Component {
      * @param value is the name of the list item that was clicked on.
      */
     onChange(value) {
-        const {grabBagData, addDevice, changeCategory, updateCurrentSubCategories} = this.props;
+        const {currentCategoryName, currentSubCategories, addDevice, changeCategory} = this.props;
         const {historyStack} = this.state;
 
-        let newCategory = '';
         if ('back' === value) {
             // to parent
             let previous = historyStack.pop();
             if (previous !== null && previous !== undefined) {
-                changeCategory(previous);
-                newCategory = previous;
+                changeCategory(previous, historyStack);
             }
         } else {
              // only check for add if not 'back'
              // only allow to add tips... this is my definition of a 'device'... could use improvement
-            if (!grabBagData.currentSubCategories[value].children) {
+            if (!currentSubCategories[value].children) {
                 addDevice(value);
                 return;
             }
 
             // to child
-            historyStack.push(grabBagData.currentCategoryName);
+            historyStack.push(currentCategoryName);
             this.setState({historyStack: historyStack});
-            changeCategory(value);
-            newCategory = value;
-        }
-
-        if (newCategory !== '') {
-            updateCurrentSubCategories(newCategory);
+            changeCategory(value, historyStack);
         }
     }
 }

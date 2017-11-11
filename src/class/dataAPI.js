@@ -1,112 +1,56 @@
 import request from 'request';
-import historyItem from './historyItem.js';
 
-const baseURL = 'https://www.ifixit.com/api/2.0/categories';
-
-// TODO: need to sort the results
+const baseURL  = 'https://www.ifixit.com/api/2.0/categories';
 
 /**
  * dataAPI
  */
 class dataAPI {
+    /**
+     * getBaseData() attempts to pull the initial catalog tree data from the API.
+     *
+     * @param callback is called with the data when it becomes available.
+     */
+    getBaseData(callback) {
+        this.getDataFromURL(baseURL, (data) => {
+            callback(data);
+        });
+    }
 
     /**
-     * getDataFromURL()
+     * getCategoryItem() attempts to pull category details (image info) from the API.
+     *
+     * @param catName is the name of the category to get details for.
+     * @param callback is called with the data when it becomes available.
+     */
+    getCategoryItem(catName, callback) {
+        const infoURL = baseURL + '/' + encodeURIComponent(catName);
+        this.getDataFromURL(infoURL, (data) => {
+            callback(data);
+        });
+    }
+
+    /**
+     * getDataFromURL() wraps up the API calls using the 'request' library.
      *
      * @param dataURL
-     * @param callback
+     * @param callback is called with the data when it becomes available; or null on error or unexpected status code
      */
     getDataFromURL(dataURL, callback) {
-        request.get(dataURL, function (error, response, body) {
-            if (!error && response.statusCode === 200) {
-                callback(JSON.parse(body));
+        request
+        .get(dataURL, function (error, response, body) {
+            if (!error) {
+                if (response.statusCode === 200) {
+                    callback(JSON.parse(body));
+                } else {
+                    callback(null);
+                    console.log(response);
+                }
             } else {
-                // TODO: Deal with errors better... try catch?
-                // TODO: deal with the 429 errors (to many calls; need to throttle)
+                callback(null);
                 console.log(error);
             }
         });
-    }
-
-    /**
-     * getCategoryData()
-     *
-     * @param client
-     */
-    getCategoryData(client) {
-        this.getDataFromURL(baseURL, (data) => {
-            this.getCategoryChildren(client, data);
-        });
-    }
-
-    /**
-     * storeChildData()
-     *
-     * @param client
-     * @param catName
-     * @param currentSubCategories
-     */
-    storeChildData(client, catName, currentSubCategories) {
-        const infoURL = baseURL + '/' + encodeURIComponent(catName);
-        currentSubCategories[catName] = []; // Response will come back not in order... keep the order by pre-allocating the slot.
-
-        this.getDataFromURL(infoURL, (catData) => {
-            // TODO: Call a method (callback) instead of manipulating the parent!
-            if (catData['image'] !== 'undefined' && catData['image'] !== null) {
-                currentSubCategories[catName] = new historyItem({
-                    catName: catName,
-                    imgId: catData['image']['id'],
-                    imgGuid: catData['image']['guid'],
-                    imgUrl: catData['image']['thumbnail'],
-                    catChildren: catData.children.length
-                });
-            } else {
-                currentSubCategories[catName] = new historyItem({
-                    catName: catName,
-                    imgId: '',
-                    imgGuid: '',
-                    imgUrl: '/images/DeviceNoImage_300x225.jpg'
-                });
-            }
-            client.setState({currentSubCategories});
-        });
-    }
-
-    /**
-     * getCategoryChildren()
-     *
-     * @param client
-     * @param data
-     */
-    getCategoryChildren(client, data) {
-        let currentSubCategories = [];
-
-        for (let catName in data) {
-            this.storeChildData(client, catName, currentSubCategories);
-        }
-    }
-
-    /**
-     * getSubCategoryData()
-     *
-     * @param newCategory
-     * @param client
-     */
-    getSubCategoryData(newCategory, client) {
-        if (!newCategory || newCategory === 'All') {
-            this.getCategoryData(client);
-        } else {
-            let dataURL = baseURL + "/" + encodeURIComponent(newCategory);
-            this.getDataFromURL(dataURL, (data) => {
-                let currentSubCategories = [];
-
-                if (data.children !== undefined) {
-                    data.children.forEach((catName) => {
-                        this.storeChildData(client, catName, currentSubCategories);
-                    });
-                }
-            });
-        }
     }
 }
 
