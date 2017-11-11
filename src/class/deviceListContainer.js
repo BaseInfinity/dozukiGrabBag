@@ -6,10 +6,11 @@ import '../css/deviceListContainer.css';
 /**
  * propTypes - Setup required properties.
  *
- * @type {{grabBagData: (*), addDevice: (*), changeCategory: (*)}}
+ * @type {{currentCategoryName: (*), currentSubCategories: (*), addDevice: (*), changeCategory: (*)}}
  */
 const propTypes = {
-    grabBagData: PropTypes.object.isRequired,
+    currentCategoryName: PropTypes.string.isRequired,
+    currentSubCategories: PropTypes.array.isRequired,
     addDevice: PropTypes.func.isRequired,
     changeCategory: PropTypes.func.isRequired
 };
