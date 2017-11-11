@@ -41,7 +41,7 @@ class GrabBagContainer extends Component {
                 <div className="container-fluid">
                     <div className="row" role="row">
                         <div className="col-xs-12 col-sm-6">
-                            <GrabBag myDevices={myDevices}></GrabBag>
+                            <GrabBag myDevices={myDevices} removeDevice={this.removeDevice.bind(this)}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
                             <DeviceListContainer addDevice={this.addDevice.bind(this)} changeCategory={this.changeCategory.bind(this)} currentCategoryName={this.state.currentCategoryName} currentSubCategories={this.state.currentSubCategories}></DeviceListContainer>
@@ -67,10 +67,10 @@ class GrabBagContainer extends Component {
      */
     addDevice(deviceName) {
         const {nextDeviceId, currentSubCategories, myDevices} = this.state;
-        let device         = currentSubCategories[deviceName];
+        let device         = Object.assign({}, currentSubCategories[deviceName]);
         device.myDeviceId  = nextDeviceId;
 
-        myDevices.push(device);
+        myDevices.push(new historyItem({catName: device.name, imgId: device.id, imgGuid: device.guid, imgUrl: device.img, catChildren: device.children, myDeviceId: device.myDeviceId}));
 
         // Grab bag is always alpha numeric sorted
         myDevices.sort((a,b) => {
@@ -79,10 +79,31 @@ class GrabBagContainer extends Component {
             return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
         });
 
-        this.setState({myDevices: this.state.myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
+        this.setState({myDevices: myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
 
         // Store the grab bag (with the new device in it) in the local web store
         this.localStorageOut();
+    }
+
+    /**
+     *
+     * @param device
+     */
+    removeDevice(device) {
+        var foundIndex = null;
+        this.state.myDevices.find((deviceToCheck, index) => {
+            if (deviceToCheck.myDeviceId === device.myDeviceId) {
+                foundIndex = index;
+            }
+            return deviceToCheck.myDeviceId === device.myDeviceId;
+        });
+        if (foundIndex !== null) {
+            let newDevices = [].concat(this.state.myDevices);
+            newDevices.splice(foundIndex,1);
+            this.setState({'myDevices': newDevices}, () => {
+                this.localStorageOut();
+            });
+        }
     }
 
     /**
@@ -141,10 +162,12 @@ class GrabBagContainer extends Component {
         let myNextDeviceIdIn = 1;
 
         if (typeof(Storage) !== 'undefined') {
-
             let devicesIn = localStorage.getItem('dozuki_grabbag_mydevices');
             if (devicesIn !== null && devicesIn !== undefined) {
-                myDevicesIn = JSON.parse(devicesIn);
+                let myDevicesRAW = JSON.parse(devicesIn);
+                myDevicesRAW.forEach((deviceItem) => {
+                    myDevicesIn.push(new historyItem({catName: deviceItem.name, imgId: deviceItem.id, imgGuid: deviceItem.guid, imgUrl: deviceItem.img, catChildren: deviceItem.children, myDeviceId: deviceItem.myDeviceId}));
+                });
             }
             if (myDevicesIn.length >= 1) {
                 myNextDeviceIdIn = myDevicesIn[myDevicesIn.length - 1].myDeviceId + 1;

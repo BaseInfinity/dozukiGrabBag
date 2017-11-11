@@ -4,10 +4,8 @@ import {DropTarget} from 'react-dnd'
 import ItemTypes from './itemTypes'
 import '../css/grabBag.css';
 
-// TODO: grab bag needs to support:
-// 1) removing items from the grab bag (click on minus sign; swipe left?)
-// 2) name and description from the catalog?
-// 3) show link to catalog page?
+// 1) name and description from the catalog?
+// 2) show link to catalog page?
 
 /**
  * cardTarget
@@ -66,8 +64,12 @@ class GrabBag extends Component {
      * @param event {Object} is the click event.
      */
     static handleOnClick(item, event) {
-        // TODO: implement grab bag delete
-        alert('Delete not implemented: ' + item.name + "(" + item.guid + ", " + item.myDeviceId + ")");
+        const { removeDevice } = this.props;
+
+        //eslint-disable-next-line
+        if (confirm("Are you sure you want to remove '" + item.name + "(" + item.myDeviceId + ")" + "' from your Grab Bag?")) {
+            removeDevice(item);
+        }
         event.preventDefault();
     }
 
