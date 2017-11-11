@@ -7,10 +7,10 @@ import DeviceItem from './deviceItem.js';
 /**
  * propTypes - Setup required properties.
  *
- * @type {{grabBagData: (*), onOpen: (*)}}
+ * @type {{currentSubCategories: (*), historyStack: (*), onChange: (*)}}
  */
 const propTypes = {
-    grabBagData: PropTypes.object.isRequired,
+    currentSubCategories: PropTypes.array.isRequired,
     historyStack: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired
 };
