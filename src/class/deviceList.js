@@ -10,7 +10,7 @@ import DeviceItem from './deviceItem.js';
  * @type {{currentSubCategories: (*), historyStack: (*), onChange: (*)}}
  */
 const propTypes = {
-    currentSubCategories: PropTypes.array.isRequired,
+    currentSubCategories: PropTypes.object.isRequired,
     historyStack: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired
 };
