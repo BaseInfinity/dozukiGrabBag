@@ -1,17 +1,21 @@
-# Dozuki Grab Bag
+# DOZUKI GRAB BAG
 
 The specification can be found in `GrabBagProject.pdf`.
 
 In general, list devices and let the user add them to their grab bag.  Client side only with Javascript, HTML5, CSS and React. 
 
-# Concerns
+# CONCERNS/QUESTIONS
 
 1. Some images mess with the layout. See `Skills->Softeare->Max OS X`  Need to tighten it up with some CSS.
-2. Folder vs. Device could be clearer is the device list.
-3. Need to support Drag and Drop per the spec!
-4. Add unit testing!
-5. Can I use Flow?
+2. Add unit testing!
+3. Can I use Flow?
 
+# SUGGESTIONS
+
+1. Cache the images? base64 encode them and store them in the data tree when they are retrieved for the first time.
+2. Grab Bag is currently sorted by name.  Might be nice to let the user control the order like a OS desktop does.
+3. Clicking a grab bag item opens an 'action' dialog... delete, add notes, open wiki page.
+    1. Make the grab bag use grab bag items to support this.
 
 # 'create-react-app' Details
 
