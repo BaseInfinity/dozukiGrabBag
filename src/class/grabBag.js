@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
-import { DropTarget } from 'react-dnd'
+import {DropTarget} from 'react-dnd'
 import ItemTypes from './itemTypes'
 import '../css/grabBag.css';
 
@@ -9,18 +9,35 @@ import '../css/grabBag.css';
 // 2) name and description from the catalog?
 // 3) show link to catalog page?
 
+/**
+ * cardTarget
+ *
+ * @type {{drop: (())}}
+ */
 const cardTarget = {
     drop() {
         return { name: 'GrabBag' }
     },
 };
 
+/**
+ * propTypes
+ *
+ * @type {{connectDropTarget: (*), isOver: (*), canDrop: (*)}}
+ */
 const propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
     isOver: PropTypes.bool.isRequired,
     canDrop: PropTypes.bool.isRequired,
 };
 
+/**
+ * collect
+ *
+ * @param connect
+ * @param monitor
+ * @returns {{connectDropTarget: *, isOver: *, canDrop: *}}
+ */
 function collect(connect, monitor) {
     return {
         connectDropTarget: connect.dropTarget(),
@@ -28,6 +45,12 @@ function collect(connect, monitor) {
         canDrop: monitor.canDrop(),
     };
 }
+
+/**
+ * style
+ *
+ * @type {{textAlign: string}}
+ */
 const style = {
     textAlign: 'center',
 };
@@ -90,15 +113,16 @@ class GrabBag extends Component {
 
     /**
      *
-     * @param item
+     * @param name
      * @param index
      * @param data
      * @param onClick
      * @returns {XML}
      */
-    genListItem = (item, index, data, onClick, isGrabBag=false) => {
+    genListItem(name, index, data, onClick) {
+        let key = name + index;
         return (
-            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={index}>
+            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={key}>
                 <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
                     <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
                         &nbsp;{data.name}
