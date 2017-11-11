@@ -72,6 +72,31 @@ class GrabBag extends Component {
     }
 
     /**
+     * genListItem()
+     *
+     * @param name
+     * @param index
+     * @param data
+     * @param onClick
+     * @returns {XML}
+     */
+    static genListItem(name, index, data, onClick) {
+        let key = name + index;
+        return (
+            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={key}>
+                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
+                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
+                        &nbsp;{data.name}
+                    </div>
+                    <div className='dozuki_grabbag_device_list_section_item_body'>
+                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={data.img} alt='' />
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    /**
      * render() displays the grab bag and it's contents.
      *
      * @returns {XML} is the content to render; Using React JSX.
@@ -101,7 +126,7 @@ class GrabBag extends Component {
                         <div className="row" role="row">
                             <div className="container-fluid">
                                 {this.props.myDevices.map((key, index) =>
-                                    this.genListItem(key.name, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]), true)
+                                    GrabBag.genListItem(key.name, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]))
                                 )}
                             </div>
                         </div>
@@ -110,30 +135,6 @@ class GrabBag extends Component {
             </div>
         );
     }
-
-    /**
-     *
-     * @param name
-     * @param index
-     * @param data
-     * @param onClick
-     * @returns {XML}
-     */
-    genListItem(name, index, data, onClick) {
-        let key = name + index;
-        return (
-            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={key}>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
-                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
-                        &nbsp;{data.name}
-                    </div>
-                    <div className='dozuki_grabbag_device_list_section_item_body'>
-                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={data.img} alt='' />
-                    </div>
-                </div>
-            </div>
-        );
-    };
 }
 
 GrabBag.propTypes = propTypes;

@@ -71,9 +71,17 @@ class GrabBagContainer extends Component {
         device.myDeviceId  = nextDeviceId;
 
         myDevices.push(device);
+
+        // Grab bag is always alpha numeric sorted
+        myDevices.sort((a,b) => {
+            let textA = a.name.toUpperCase();
+            let textB = b.name.toUpperCase();
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+        });
+
         this.setState({myDevices: this.state.myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
 
-        /* Store the grab bag with the new device in it */
+        // Store the grab bag (with the new device in it) in the local web store
         this.localStorageOut();
     }
 
@@ -81,21 +89,21 @@ class GrabBagContainer extends Component {
      * pullInitialTreeDataFromAPI()
      */
     pullInitialTreeDataFromAPI () {
-        /* attempt to get the initial tree data from the api... we call this the baseData */
+        // attempt to get the initial tree data from the api... we call this the baseData
         this.state.dataAPI.getBaseData((data) => {
             if (data !== null) {
-                /* Store the initial baseData in the object state. */
+                // Store the initial baseData in the object state.
                 this.setState({'baseData': data});
 
-                /* Loop trough the root's direct decedents within the baseData and get the image details. */
+                // Loop trough the root's direct decedents within the baseData and get the image details.
                 for (let catName in data) {
                     this.state.dataAPI.getCategoryItem(catName, (dataSub) => {
 
-                        /* update the baseData items to have a 'details' value as the image data for each comes back. */
+                        // update the baseData items to have a 'details' value as the image data for each comes back.
                         let newBaseData = this.state.baseData;
                         newBaseData[catName]['details'] = dataSub;
 
-                        /* Also, populate the currentSubCategories (what the device list displays) while we are here. */
+                        // Also, populate the currentSubCategories (what the device list displays) while we are here.
                         let currentSubCategories = this.state.currentSubCategories;
                         currentSubCategories[catName] = new historyItem({
                             catName: catName,
@@ -108,7 +116,7 @@ class GrabBagContainer extends Component {
                     });
                 }
             } else {
-                /* failed to get the base data */
+                // failed to get the base data
                 // TODO : Tell user to refresh the browser?
             }
         });
@@ -152,9 +160,9 @@ class GrabBagContainer extends Component {
      * @param historyStack is used to help figure out the location of the category in the tree (baseData).
      */
     changeCategory(newCategory, historyStack) {
-        /* update the current category name, and wipe out the currentSubCategories before repopulating */
+        // update the current category name, and wipe out the currentSubCategories before repopulating
         this.setState({currentCategoryName: newCategory, currentSubCategories: {}});
-        /* repopulate the currentSubCategories */
+        // repopulate the currentSubCategories
         this.updateCurrentSubCategories(newCategory, historyStack);
     }
 
