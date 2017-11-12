@@ -87,7 +87,9 @@ class deviceItem extends Component {
         const {name, onItemClick} = this.props;
 
         onItemClick(name, event);
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
     }
 }
 
