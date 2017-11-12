@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "enzyme": "^3.1.1",
+    "enzyme-adapter-react-16": "^1.0.4",
+    "expect": "^21.2.1",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dom": "^16.0.0",
     "react-scripts": "1.0.17",
+    "react-test-renderer": "^16.1.0",
     "request": "^2.83.0"
   },
   "scripts": {
