@@ -48,7 +48,10 @@ class backItem extends Component {
         const {onItemClick} = this.props;
 
         onItemClick('back');
-        event.preventDefault();
+
+        if (event) {
+            event.preventDefault();
+        }
     }
 }
 
