@@ -6,16 +6,16 @@ In general, list devices and let the user add them to their grab bag.  Client si
 
 # CONCERNS/QUESTIONS
 
-1. Some images mess with the layout. See `Skills->Softeare->Max OS X`  Need to tighten it up with some CSS.
-2. Add unit testing!
-3. Can I use Flow?
+1. Add unit testing!
+2. Can I use Flow?
 
 # SUGGESTIONS
 
 1. Cache the images? base64 encode them and store them in the data tree when they are retrieved for the first time.
 2. Grab Bag is currently sorted by name.  Might be nice to let the user control the order like a OS desktop does.
-3. Clicking a grab bag item opens an 'action' dialog... delete, add notes, open wiki page.
+3. Clicking a grab bag item opens an 'action' dialog (reactstrap lib)... delete, add notes, open wiki page.
     1. Make the grab bag use grab bag items to support this.
+4. Search control that filters the grab bag display.    
 
 # 'create-react-app' Details
 
