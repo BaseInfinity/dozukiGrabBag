@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 /**
+ * These are strings use in the UI.  Candidates for being provided by a language system.
+ *
+ * @type {string}
+ */
+const STRING_BACK_TITLE  = 'BACK';
+
+/**
  * propTypes - Setup required properties.
  *
  *  @type {{onBack: (*)}}
@@ -23,7 +30,7 @@ class backItem extends Component {
         return (
              <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key='back'>
                  <div className='dozuki_grabbag_device_list_section_item' name='back' value='back' onClick={this.onItemClick.bind(this)}>
-                    <div className='dozuki_grabbag_device_list_section_item_title'>BACK</div>
+                    <div className='dozuki_grabbag_device_list_section_item_title'>{STRING_BACK_TITLE}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
                         <img className='dozuki_grabbag_device_list_section_item_image' src='/images/back.png' alt='' />
                     </div>
