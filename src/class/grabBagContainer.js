@@ -5,6 +5,14 @@ import DeviceListContainer from './deviceListContainer.js';
 import GrabBag from './grabBag.js';
 import DataAPI from './dataAPI.js';
 
+const STRING_NO_DEVICES = 'You have no items in your grab bag at this time.  Browse devices and drag them here to add them to your grab bag.';
+const STRING_NO_STORAGE = 'Storage for your grab bag is not available.  Ensure that cookies are turned on, or ty another browser.';
+const STRING_NO_API     = 'Failed to find any devices.  Try refreshing your browser.';
+const STRING_ROOT_TEXT  = 'All';
+
+const EMPTY_DATA_LENGTH = 2;
+const NEXT_ITEM_ID      = 1;
+
 /**
  * GrabBagContainer is the outer most container... is the conduit between the 'grab bag' and the 'device list'.
  *
@@ -16,6 +24,9 @@ import DataAPI from './dataAPI.js';
  *
  */
 class GrabBagContainer extends Component {
+    pullCounter = 0;
+    ignorePull = false;
+
     /**
      * constructor()
      *
@@ -34,11 +45,11 @@ class GrabBagContainer extends Component {
              */
             baseData: null,
             /**
-             * myDevices is a list of data structures that are the 'details' elements pulled from the baseData.
+             * myItems is a list of data structures that are the 'details' elements pulled from the baseData.
              *
              *  The list is used by the grabBag but, it is managed here.
              */
-            myDevices: {},
+            myItems: {},
             /**
              * currentSubCategories is a list of data structures that are the 'details' elements pulled from
              * the baseData.
@@ -49,15 +60,19 @@ class GrabBagContainer extends Component {
             /**
              * currentCategoryName keeps track of the current category name.
              */
-            currentCategoryName: 'All',
+            currentCategoryName: STRING_ROOT_TEXT,
             /**
-             * nextDeviceId is the next value to be used for the itemId for items in teh grabBag.
+             * nextItemId is the next value to be used for the itemId for items in the grabBag.
              */
-            nextDeviceId: 1,
+            nextItemId: NEXT_ITEM_ID,
             /**
              * deviceListMessage is used to communicate failures to the user, via the device list.
              */
             deviceListMessage: 'Looking for devices...',
+            /**
+             *
+             */
+            grabBagMessage: 'Retrieving your grab bag...',
             /**
              * dataApi is used to pull data from the API.
              */
@@ -71,17 +86,17 @@ class GrabBagContainer extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {myDevices} = this.state;
+        const {myItems, grabBagMessage, currentCategoryName, currentSubCategories, deviceListMessage} = this.state;
 
         return (
             <DragDropContextProvider backend={HTML5Backend}>
                 <div className="container-fluid">
                     <div className="row" role="row">
                         <div className="col-xs-12 col-sm-6">
-                            <GrabBag myDevices={myDevices} removeDevice={this.removeDevice.bind(this)}></GrabBag>
+                            <GrabBag myDevices={myItems} removeDevice={this.removeDevice.bind(this)} grabBagMessage={grabBagMessage}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
-                            <DeviceListContainer addDevice={this.addDevice.bind(this)} changeCategory={this.changeCategory.bind(this)} currentCategoryName={this.state.currentCategoryName} currentSubCategories={this.state.currentSubCategories} deviceListMessage={this.state.deviceListMessage}></DeviceListContainer>
+                            <DeviceListContainer addDevice={this.addItem.bind(this)} changeCategory={this.changeCategory.bind(this)} currentCategoryName={currentCategoryName} currentSubCategories={currentSubCategories} deviceListMessage={deviceListMessage}></DeviceListContainer>
                         </div>
                     </div>
                 </div>
@@ -101,47 +116,47 @@ class GrabBagContainer extends Component {
     }
 
     /**
-     * addDevice() - Adds a device to the grab bag. (myDevices)
+     * addItem() adds a device to the grab bag. (myItems)
      *
-     * @param deviceName is the name of the device to add
+     * @param itemName is the name of the device to add
      */
-    addDevice(deviceName) {
-        const {nextDeviceId, currentSubCategories, myDevices} = this.state;
+    addItem(itemName) {
+        const {nextItemId, currentSubCategories, myItems} = this.state;
 
         // Make a copy of an item object by looking it up in the current categories using the deviceName.
-        let item = Object.assign({}, currentSubCategories[deviceName]);
+        let item = Object.assign({}, currentSubCategories[itemName]);
 
         // Add the itemId to the object.
-        item.itemId = nextDeviceId;
+        item.itemId = nextItemId;
 
-        // Add the item object to myDevices.
-        myDevices[deviceName + nextDeviceId] =  item;
+        // Add the item object to myItems.
+        myItems[itemName + nextItemId] =  item;
 
         // Increment the next device id
-        const newNextDeviceId = nextDeviceId + 1;
+        const newNextItemId = nextItemId + 1;
 
         // Store the new next device id, and trigger a refresh to show the item in the grab bag.
-        this.setState({'nextDeviceId': newNextDeviceId});
+        this.setState({nextItemId: newNextItemId});
 
         // Store the grab bag (with the new device in it) in the local web store
         this.localStorageOut();
     }
 
     /**
-     *
+     * removeDevice()
      * @param device
      */
     removeDevice(device) {
-        let {myDevices} = this.state;
+        let {myItems} = this.state;
 
         // Find the item in the list by matching itemId and delete it.
-        Object.keys(myDevices).forEach((key) => {
-            if (myDevices[key].itemId === device.itemId) {
+        Object.keys(myItems).forEach((key) => {
+            if (myItems[key].itemId === device.itemId) {
                 // Found a match... delete the it.
-                delete myDevices[key];
-                // Update myDevices and trigger a refresh to show that the item was removed.
-                this.setState({'myDevices': myDevices}, () => {
-                    // Safe to store the myDevices to local storage now.
+                delete myItems[key];
+                // Update myItems and trigger a refresh to show that the item was removed.
+                this.setState({'myItems': myItems}, () => {
+                    // Safe to store the myItems to local storage now.
                     this.localStorageOut();
                 });
             }
@@ -156,18 +171,18 @@ class GrabBagContainer extends Component {
         this.state.dataAPI.getBaseData((data) => {
             if (data !== null) {
                 // Store the initial baseData in the object state.
-                this.setState({'baseData': data});
+                this.setState({baseData: data});
                 // Loop trough the root's direct decedents within the baseData and get the image details.
                 for (let catName in data) {
                     this.state.dataAPI.getCategoryItem(catName, (dataSub) => {
                         // update the baseData items to have a 'details' value as the image data for each comes back.
                         let newBaseData = this.state.baseData;
                         newBaseData[catName].details = dataSub;
-                        this.setState({'baseData': newBaseData, 'currentSubCategories': newBaseData});
+                        this.setState({baseData: newBaseData, currentSubCategories: newBaseData});
                     });
                 }
             } else {
-                this.setState({'deviceListMessage': 'Failed to find any devices.  Try refreshing your browser.'});
+                this.setState({deviceListMessage: STRING_NO_API});
             }
         });
     }
@@ -178,10 +193,10 @@ class GrabBagContainer extends Component {
     localStorageOut() {
         // Check to make sure it is supported.
         if (typeof(Storage) !== 'undefined') {
-            const {myDevices} = this.state;
+            const {myItems} = this.state;
 
             // Store in local web storage a JSON version of the structure.
-            localStorage.setItem('dozuki_grabbag_mydevices', JSON.stringify(myDevices));
+            localStorage.setItem('dozuki_grabbag_myitems', JSON.stringify(myItems));
         }
     }
 
@@ -191,29 +206,32 @@ class GrabBagContainer extends Component {
     localStorageIn() {
         // Check to make sure it is supported.
         if (typeof(Storage) !== 'undefined') {
-            let {nextDeviceId} = this.state;
-            let myDevicesIn    = {};
+            let {nextItemId} = this.state;
+            let myItemsIn    = {};
 
             // Read from local web storage a JSON version of the structure.
-            let devicesIn = localStorage.getItem('dozuki_grabbag_mydevices');
+            let devicesIn = localStorage.getItem('dozuki_grabbag_myitems');
 
             // Confirm that we got something before continuing.
-            if (devicesIn !== null && devicesIn !== undefined) {
+            if (devicesIn !== null && devicesIn !== undefined && devicesIn.length > EMPTY_DATA_LENGTH) {
                 // Parse the JSON package back into an object we can work with.
-                myDevicesIn = JSON.parse(devicesIn);
+                myItemsIn = JSON.parse(devicesIn);
+
                 // Sort the results.
-                Object.keys(myDevicesIn).sort((a,b) => {
+                Object.keys(myItemsIn).sort((a, b) => {
                     let textA = a.toUpperCase();
                     let textB = b.toUpperCase();
                     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                 }).forEach((key) => {
-                    // Increment the nextDeviceId if needed.
-                    nextDeviceId = nextDeviceId < myDevicesIn[key].itemId ? myDevicesIn[key].itemId + 1 : nextDeviceId;
+                    // Increment the nextItemId if needed.
+                    nextItemId = nextItemId < myItemsIn[key].itemId ? myItemsIn[key].itemId + 1 : nextItemId;
                 });
-                this.setState({myDevices: myDevicesIn, nextDeviceId: nextDeviceId});
+                this.setState({myItems: myItemsIn, nextItemId: nextItemId});
+            } else {
+                this.setState({'grabBagMessage': STRING_NO_DEVICES});
             }
         } else {
-            // TODO: Tell the user that they wont be able to save their grab bag if they don't turn on cookies?
+            this.setState({'grabBagMessage': STRING_NO_STORAGE});
         }
     }
 
@@ -224,31 +242,57 @@ class GrabBagContainer extends Component {
      * @param historyStack is used to help figure out the location of the category in the tree (baseData).
      */
     changeCategory(newCategory, historyStack) {
-        // update the current category name, and wipe out the currentSubCategories before repopulating
-        this.setState({currentCategoryName: newCategory, currentSubCategories: {}});
 
-        // repopulate the currentSubCategories
-        this.updateCurrentSubCategories(newCategory, historyStack);
+        // Because the API pulls can take a while and we don't block as they are being pulled,
+        // we need to protect against getting another change (say the user hit the back button
+        // before we done with a set of pulls to populate that category).
+        //
+        // Do this by keeping track of the pull completions and not letting a change to be processed
+        // until they are done, and trying again in a tenth of a second.
+        if (this.pullCounter) {
+            this.ignorePull = true;
+            var _this = this;
+            setTimeout(() => { _this.changeCategory(newCategory, historyStack); }, 100);
+            return;
+        }
+
+        // update the current category name, and wipe out the currentSubCategories before repopulating
+        this.setState({currentCategoryName: newCategory, currentSubCategories: {}}, () => {
+            if (!newCategory || newCategory === 'All') {
+                // Just point it at the baseData and we're done... the details on the children was pulled at startup.
+                const {baseData} = this.state;
+                this.setState({currentSubCategories: baseData});
+            } else {
+                // Reuse the data in the baseData if available
+                let dataPointer = this.getCurrentSubCategoriesPointer(newCategory, historyStack);
+                this.setState({currentSubCategories: dataPointer});
+                this.cacheCategoryImageData(dataPointer);
+            }
+        });
     }
 
     /**
-     * getCategoryImageDataPointer() returns a pointer to the current data point in the tree (baseData)
+     * getCurrentSubCategoriesPointer() returns a pointer to the current data point in the tree (baseData)
      *
      * @param historyStack
      * @param newCategory
      *
      * @returns {*}
      */
-    getCategoryImageDataPointer(newCategory, historyStack) {
+    getCurrentSubCategoriesPointer(newCategory, historyStack) {
         let dataPointer    = this.state.baseData;
         let myHistoryStack = historyStack.slice();
         let catName        = myHistoryStack.shift();
+
+        // Walk the historyStack from bottom to top to move the dataPointer in the tree.
         while (catName) {
             if (catName !== 'All') {
                 dataPointer = dataPointer[catName];
             }
             catName = myHistoryStack.shift();
         }
+
+        // Return the new dataPointer position.
         return dataPointer[newCategory];
     }
 
@@ -258,37 +302,37 @@ class GrabBagContainer extends Component {
      * @param dataPointer
      */
     cacheCategoryImageData(dataPointer) {
-        // Get the level's data (if we don't already have it)
+        // Get the level's 'details' data (if we don't already have it)
+
+        this.pullCounter = Object.keys(dataPointer).length;
         for (let catName in dataPointer) {
             // if the details data is not there, try to get it.
             if (dataPointer[catName]['details'] === undefined && catName !== 'details') {
-                this.state.dataAPI.getCategoryItem(catName, (dataSub) => {
-                    // As the results come back, stash them in the 'details' offset of the associated item in the tree (baseData).
+                const {dataAPI} = this.state;
+
+                dataAPI.getCategoryItem(catName, (dataSub) => {
+                    // As the results come back...
+
+                    // Stash them in the 'details' offset of the associated item in the tree (baseData).
                     dataPointer[catName]['details'] = dataSub;
 
-                    // Populate the currentSubCategories (what the device list displays).
-                    this.setState({currentSubCategories: dataPointer});
+                    // Decrement the pull counter
+                    this.pullCounter--;
+
+                    // Only update if not waiting to process another change already.
+                    if (!this.ignorePull) {
+                        // Populate the currentSubCategories (what the device list displays).
+                        this.setState({currentSubCategories: dataPointer});
+                    }
+
+                    // Unblock any backed up change requests.
+                    if (this.pullCounter === 0) {
+                        this.ignorePull = false;
+                    }
                 });
+            } else {
+                this.pullCounter--;
             }
-        }
-    }
-
-    /**
-     * updateCurrentSubCategories()
-     *
-     * @param newCategory
-     * @param historyStack
-     */
-    updateCurrentSubCategories(newCategory, historyStack) {
-        if (!newCategory || newCategory === 'All') {
-            const {baseData} = this.state;
-            this.setState({'currentSubCategories': baseData});
-        } else {
-            // Reuse the data in the baseData if available
-            let dataPointer = this.getCategoryImageDataPointer(newCategory, historyStack);
-            this.cacheCategoryImageData(dataPointer);
-
-            this.setState({'currentSubCategories': dataPointer});
         }
     }
 }
