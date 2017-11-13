@@ -10,6 +10,17 @@ import '../css/grabBag.css';
 const DND_CANDROP_COLOR  = 'orange';
 const DND_ISACTIVE_COLOR = 'green';
 
+const STRING_GRABBAG_TITLE  = 'Your Grab Bag';
+const STRING_CONFIRM_DELETE = "Are you sure you want to remove '{0} ({1})' from your Grab Bag?";
+
+String.prototype.format = function() {
+    let a = this;
+    for (let k in arguments) {
+        a = a.replace("{" + k + "}", arguments[k])
+    }
+    return a
+};
+
 /**
  * cardTarget
  *
@@ -71,10 +82,10 @@ class GrabBag extends Component {
      */
     static handleOnClick(item, event) {
         const { removeItem } = this.props;
+        let message = STRING_CONFIRM_DELETE.toString().format(item.details.topic_info.name, item.itemId);
 
-        // TODO: Extract this potential language string... "Are you sure..."
         //eslint-disable-next-line
-        if (confirm("Are you sure you want to remove '" + item.details.topic_info.name + " (" + item.itemId + ")" + "' from your Grab Bag?")) {
+        if (confirm(message)) {
             removeItem(item);
         }
         if (event) {
@@ -130,10 +141,9 @@ class GrabBag extends Component {
             boxShadow = '0 0 2px ' + DND_CANDROP_COLOR;
         }
 
-        // TODO: Extract this potential language string 'Your Grab Bag'
         return connectDropTarget(
             <div className='dozuki_grabbag_container'>
-                <h3>Your Grab Bag</h3>
+                <h3>{STRING_GRABBAG_TITLE}</h3>
                 <div className='dozuki_grabbag_device_list' style={{ ...style, boxShadow }}>
                     {noDevices}
                     <section className='dozuki_grabbag_device_list_section'>
