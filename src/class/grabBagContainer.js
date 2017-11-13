@@ -10,9 +10,11 @@ import DataAPI from './dataAPI.js';
  *
  * @type {string}
  */
-const STRING_NO_DEVICES = 'You have no items in your grab bag at this time.  Browse devices and drag them here to add them to your grab bag.';
-const STRING_NO_STORAGE = 'Storage for your grab bag is not available.  Ensure that cookies are turned on, or ty another browser.';
-const STRING_NO_API     = 'Failed to find any devices.  Try refreshing your browser.';
+const STRING_NO_ITEMS        = 'You have no items in your grab bag at this time.  Browse devices and drag them here to add them to your grab bag.';
+const STRING_NO_STORAGE      = 'Storage for your grab bag is not available.  Ensure that cookies are turned on, or ty another browser.';
+const STRING_NO_API          = 'Failed to find any devices.  Try refreshing your browser.';
+const STRING_PULLING_DEVICES = 'Looking for devices...';
+const STRING_PULLING_ITEMS   = 'Retrieving your grab bag...';
 
 /**
  * STRING_ROOT_TEXT is how I identity the root of the tree... it could be 'root' fo that matter.
@@ -46,7 +48,7 @@ const NEXT_ITEM_ID      = 1;
  */
 class GrabBagContainer extends Component {
     pullCounter = 0;
-    ignorePull = false;
+    ignorePull  = false;
 
     /**
      * constructor()
@@ -87,13 +89,13 @@ class GrabBagContainer extends Component {
              */
             nextItemId: NEXT_ITEM_ID,
             /**
-             * deviceListMessage is used to communicate failures to the user, via the device list.
+             * deviceListMessage is used to communicate status and failures to the user, via the device list.
              */
-            deviceListMessage: 'Looking for devices...',
+            deviceListMessage: STRING_PULLING_DEVICES,
             /**
-             *
+             * grabBagMessage is used to communicate status and failures to the user, via the grab bag.
              */
-            grabBagMessage: 'Retrieving your grab bag...',
+            grabBagMessage: STRING_PULLING_ITEMS,
             /**
              * dataApi is used to pull data from the API.
              */
@@ -248,12 +250,12 @@ class GrabBagContainer extends Component {
                     // Increment the nextItemId if needed.
                     nextItemId = nextItemId < myItemsIn[key].itemId ? myItemsIn[key].itemId + 1 : nextItemId;
                 });
-                this.setState({myItems: myItemsIn, nextItemId: nextItemId});
+                this.setState({myItems: myItemsIn, nextItemId: nextItemId, grabBagMessage: STRING_NO_ITEMS});
             } else {
-                this.setState({'grabBagMessage': STRING_NO_DEVICES});
+                this.setState({grabBagMessage: STRING_NO_ITEMS});
             }
         } else {
-            this.setState({'grabBagMessage': STRING_NO_STORAGE});
+            this.setState({grabBagMessage: STRING_NO_STORAGE});
         }
     }
 
