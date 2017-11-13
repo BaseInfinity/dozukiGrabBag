@@ -27,6 +27,7 @@ const propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
     isOver: PropTypes.bool.isRequired,
     canDrop: PropTypes.bool.isRequired,
+    grabBagMessage: PropTypes.string.isRequired
 };
 
 /**
@@ -108,12 +109,12 @@ class GrabBag extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const { canDrop, isOver, connectDropTarget, myDevices } = this.props;
+        const { canDrop, isOver, connectDropTarget, myDevices, grabBagMessage } = this.props;
         const isActive = canDrop && isOver;
 
         let noDevices = '';
         if (Object.keys(myDevices).length === 0 && myDevices.constructor === Object) {
-            noDevices = <p>You have no devices at this time.</p>;
+            noDevices = <p>{grabBagMessage}</p>;
         }
 
         let boxShadow = '';
