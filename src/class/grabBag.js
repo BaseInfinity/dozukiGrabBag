@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types'
-import {DropTarget} from 'react-dnd'
-import ItemTypes from './itemTypes'
+import PropTypes from 'prop-types';
+import {DropTarget} from 'react-dnd';
+import ItemTypes from './itemTypes';
+import GrabBagItem from './grabBagItem';
 import '../css/grabBag.css';
 
 // 1) name and description from the catalog?
@@ -86,7 +87,7 @@ class GrabBag extends Component {
      * @param item {Object} is the device that was clicked on.
      * @param event {Object} is the click event.
      */
-    static handleOnClick(item, event) {
+    static removeItem(item, event) {
         const { removeItem } = this.props;
         let message = STRING_CONFIRM_DELETE.toString().format(item.details.topic_info.name, item.itemId);
 
@@ -94,37 +95,7 @@ class GrabBag extends Component {
         if (confirm(message)) {
             removeItem(item);
         }
-        if (event) {
-            event.preventDefault();
-        }
     }
-
-    /**
-     * genListItem()
-     *
-     * @param key {string}
-     * @param data {Object}
-     * @param onClick {Object}
-     *
-     * @returns {XML}
-     */
-    static genListItem(key, data, onClick) {
-        const name = data.details.topic_info.name;
-        const src = data.details.image.thumbnail;
-
-        return (
-            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={key}>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={onClick}>
-                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={name}>
-                        {name}
-                    </div>
-                    <div className='dozuki_grabbag_device_list_section_item_body'>
-                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={src} alt='' />
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     /**
      * render() displays the grab bag and it's contents.
@@ -162,7 +133,7 @@ class GrabBag extends Component {
                                         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                                     })
                                     .map((key, index) =>
-                                    GrabBag.genListItem(key, myItems[key], GrabBag.handleOnClick.bind(this, myItems[key]))
+                                    <GrabBagItem key={key} data={myItems[key]} removeItem={GrabBag.removeItem.bind(this, myItems[key])}/>
                                 )}
                             </div>
                         </div>
