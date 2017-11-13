@@ -13,6 +13,7 @@ const DND_ISACTIVE_COLOR = 'green';
 const STRING_GRABBAG_TITLE  = 'Your Grab Bag';
 const STRING_CONFIRM_DELETE = "Are you sure you want to remove '{0} ({1})' from your Grab Bag?";
 
+//eslint-disable-next-line
 String.prototype.format = function() {
     let a = this;
     for (let k in arguments) {
@@ -98,7 +99,7 @@ class GrabBag extends Component {
      *
      * @param key {string}
      * @param data {Object}
-     * @param onClick {callback}
+     * @param onClick {Object}
      *
      * @returns {XML}
      */
