@@ -93,7 +93,7 @@ class GrabBagContainer extends Component {
                 <div className="container-fluid">
                     <div className="row" role="row">
                         <div className="col-xs-12 col-sm-6">
-                            <GrabBag myDevices={myItems} removeDevice={this.removeDevice.bind(this)} grabBagMessage={grabBagMessage}></GrabBag>
+                            <GrabBag myItems={myItems} removeItem={this.removeItem.bind(this)} grabBagMessage={grabBagMessage}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
                             <DeviceListContainer addDevice={this.addItem.bind(this)} changeCategory={this.changeCategory.bind(this)} currentCategoryName={currentCategoryName} currentSubCategories={currentSubCategories} deviceListMessage={deviceListMessage}></DeviceListContainer>
@@ -143,10 +143,10 @@ class GrabBagContainer extends Component {
     }
 
     /**
-     * removeDevice()
+     * removeItem()
      * @param device
      */
-    removeDevice(device) {
+    removeItem(device) {
         let {myItems} = this.state;
 
         // Find the item in the list by matching itemId and delete it.

@@ -27,7 +27,9 @@ const propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
     isOver: PropTypes.bool.isRequired,
     canDrop: PropTypes.bool.isRequired,
-    grabBagMessage: PropTypes.string.isRequired
+    grabBagMessage: PropTypes.string.isRequired,
+    removeItem: PropTypes.func.isRequired,
+    myItems: PropTypes.object.isRequired
 };
 
 /**
@@ -65,11 +67,11 @@ class GrabBag extends Component {
      * @param event {Object} is the click event.
      */
     static handleOnClick(item, event) {
-        const { removeDevice } = this.props;
+        const { removeItem } = this.props;
 
         //eslint-disable-next-line
         if (confirm("Are you sure you want to remove '" + item.details.topic_info.name + " (" + item.itemId + ")" + "' from your Grab Bag?")) {
-            removeDevice(item);
+            removeItem(item);
         }
         if (event) {
             event.preventDefault();
@@ -109,11 +111,11 @@ class GrabBag extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const { canDrop, isOver, connectDropTarget, myDevices, grabBagMessage } = this.props;
+        const { canDrop, isOver, connectDropTarget, myItems, grabBagMessage } = this.props;
         const isActive = canDrop && isOver;
 
         let noDevices = '';
-        if (Object.keys(myDevices).length === 0 && myDevices.constructor === Object) {
+        if (Object.keys(myItems).length === 0 && myItems.constructor === Object) {
             noDevices = <p>{grabBagMessage}</p>;
         }
 
@@ -131,14 +133,14 @@ class GrabBag extends Component {
                     <section className='dozuki_grabbag_device_list_section'>
                         <div className="row" role="row">
                             <div className="container-fluid">
-                                {Object.keys(myDevices)
+                                {Object.keys(myItems)
                                     .sort((a,b) => {
                                         let textA = a.toUpperCase();
                                         let textB = b.toUpperCase();
                                         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                                     })
                                     .map((key, index) =>
-                                    GrabBag.genListItem(key, myDevices[key], GrabBag.handleOnClick.bind(this, myDevices[key]))
+                                    GrabBag.genListItem(key, myItems[key], GrabBag.handleOnClick.bind(this, myItems[key]))
                                 )}
                             </div>
                         </div>
