@@ -61,6 +61,7 @@
     transform: scale(.8);
     width: 100%;
     max-width: 60px;
+    max-height: 50px;
 }
 
 .dozuki_grabbag_device_list_section_item_folder_image {
