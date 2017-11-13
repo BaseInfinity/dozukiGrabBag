@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import DeviceList from './deviceList.js';
 import '../css/deviceListContainer.css';
 
+/**
+ * These are strings use in the UI.  Candidates for being provided by a language system.
+ *
+ * @type {string}
+ */
 const STRING_DEVICELIST_TITLE  = 'Browse Devices';
 
 /**

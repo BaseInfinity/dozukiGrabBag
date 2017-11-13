@@ -10,6 +10,11 @@ import '../css/grabBag.css';
 const DND_CANDROP_COLOR  = 'orange';
 const DND_ISACTIVE_COLOR = 'green';
 
+/**
+ * These are strings use in the UI.  Candidates for being provided by a language system.
+ *
+ * @type {string}
+ */
 const STRING_GRABBAG_TITLE  = 'Your Grab Bag';
 const STRING_CONFIRM_DELETE = "Are you sure you want to remove '{0} ({1})' from your Grab Bag?";
 
