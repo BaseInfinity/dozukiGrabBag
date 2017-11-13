@@ -90,7 +90,7 @@
     position: absolute;
     font-size: 6.5em;
     color: white;
-    top: 50%;
+    top: 54px;
     left: 50%;
     margin: 2px 0 0 -40px;
     text-shadow: 2px 2px 2px silver;
@@ -105,8 +105,13 @@
     position: absolute;
     font-size: 5.3em;
     color: white;
-    top: 50%;
+    top: 53px;
     left: 50%;
     margin: 2px 0 0 -32px;
     text-shadow: 2px 2px 2px silver;
+}
+
+.dozuki_grabbag_device_list_section_item_details {
+    font-size: .7em;
+    display: none;
 }
