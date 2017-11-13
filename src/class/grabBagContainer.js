@@ -139,7 +139,7 @@ class GrabBagContainer extends Component {
     /**
      * addItem() adds a device to the grab bag. (myItems)
      *
-     * @param itemName is the name of the device to add
+     * @param {string} itemName is the name of the device to add
      */
     addItem(itemName) {
         const {nextItemId, currentSubCategories, myItems} = this.state;
@@ -165,7 +165,8 @@ class GrabBagContainer extends Component {
 
     /**
      * removeItem()
-     * @param device
+     *
+     * @param {Object} device
      */
     removeItem(device) {
         let {myItems} = this.state;
@@ -259,8 +260,8 @@ class GrabBagContainer extends Component {
     /**
      * changeCategory() will cause device list to populate with the new category.
      *
-     * @param newCategory is the new category the device list is to display
-     * @param historyStack is used to help figure out the location of the category in the tree (baseData).
+     * @param {string} newCategory is the new category the device list is to display
+     * @param {Object} historyStack is used to help figure out the location of the category in the tree (baseData).
      */
     changeCategory(newCategory, historyStack) {
 
@@ -295,8 +296,8 @@ class GrabBagContainer extends Component {
     /**
      * getCurrentSubCategoriesPointer() returns a pointer to the current data point in the tree (baseData)
      *
-     * @param historyStack
-     * @param newCategory
+     * @param historyStack {Object}
+     * @param newCategory {string}
      *
      * @returns {*}
      */
@@ -320,7 +321,7 @@ class GrabBagContainer extends Component {
     /**
      * cacheCategoryImageData() attempts to pull image data for the current category's children from the API, if needed.
      *
-     * @param dataPointer
+     * @param dataPointer {Object}
      */
     cacheCategoryImageData(dataPointer) {
         // Get the level's 'details' data (if we don't already have it)
