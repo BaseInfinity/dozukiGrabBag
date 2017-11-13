@@ -7,6 +7,9 @@ import '../css/grabBag.css';
 // 1) name and description from the catalog?
 // 2) show link to catalog page?
 
+const DND_CANDROP_COLOR  = 'orange';
+const DND_ISACTIVE_COLOR = 'green';
+
 /**
  * cardTarget
  *
@@ -63,12 +66,13 @@ class GrabBag extends Component {
     /**
      * handleOnClick() enables the deleting of items from the grab bag.
      *
-     * @param item {historyItem} is the device that was clicked on.
+     * @param item {Object} is the device that was clicked on.
      * @param event {Object} is the click event.
      */
     static handleOnClick(item, event) {
         const { removeItem } = this.props;
 
+        // TODO: Extract this potential language string... "Are you sure..."
         //eslint-disable-next-line
         if (confirm("Are you sure you want to remove '" + item.details.topic_info.name + " (" + item.itemId + ")" + "' from your Grab Bag?")) {
             removeItem(item);
@@ -81,9 +85,9 @@ class GrabBag extends Component {
     /**
      * genListItem()
      *
-     * @param key
-     * @param data
-     * @param onClick
+     * @param key {string}
+     * @param data {Object}
+     * @param onClick {callback}
      *
      * @returns {XML}
      */
@@ -121,10 +125,12 @@ class GrabBag extends Component {
 
         let boxShadow = '';
         if (isActive) {
-            boxShadow = '0 0 4px green';
+            boxShadow = '0 0 4px ' + DND_ISACTIVE_COLOR;
         } else if (canDrop) {
-            boxShadow = '0 0 2px red';
+            boxShadow = '0 0 2px ' + DND_CANDROP_COLOR;
         }
+
+        // TODO: Extract this potential language string 'Your Grab Bag'
         return connectDropTarget(
             <div className='dozuki_grabbag_container'>
                 <h3>Your Grab Bag</h3>
