@@ -5,12 +5,33 @@ import DeviceListContainer from './deviceListContainer.js';
 import GrabBag from './grabBag.js';
 import DataAPI from './dataAPI.js';
 
+/**
+ * These are strings use in the UI.  Candidates for being provided by a language system.
+ *
+ * @type {string}
+ */
 const STRING_NO_DEVICES = 'You have no items in your grab bag at this time.  Browse devices and drag them here to add them to your grab bag.';
 const STRING_NO_STORAGE = 'Storage for your grab bag is not available.  Ensure that cookies are turned on, or ty another browser.';
 const STRING_NO_API     = 'Failed to find any devices.  Try refreshing your browser.';
+
+/**
+ * STRING_ROOT_TEXT is how I identity the root of the tree... it could be 'root' fo that matter.
+ *
+ * @type {string}
+ */
 const STRING_ROOT_TEXT  = 'All';
 
+/**
+ *
+ * @type {number}
+ */
 const EMPTY_DATA_LENGTH = 2;
+
+/**
+ * NEXT_ITEM_ID is the default next item id.
+ *
+ * @type {number}
+ */
 const NEXT_ITEM_ID      = 1;
 
 /**
