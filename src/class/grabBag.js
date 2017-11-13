@@ -125,7 +125,7 @@ class GrabBag extends Component {
         }
         return connectDropTarget(
             <div className='dozuki_grabbag_container'>
-                <h3>Your Devices</h3>
+                <h3>Your Grab Bag</h3>
                 <div className='dozuki_grabbag_device_list' style={{ ...style, boxShadow }}>
                     {noDevices}
                     <section className='dozuki_grabbag_device_list_section'>
