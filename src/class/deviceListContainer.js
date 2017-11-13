@@ -76,8 +76,6 @@ class deviceListContainer extends Component {
 
             // to child
             historyStack.push(currentCategoryName);
-// TODO: IS THIS STATE NEEDED?
-//            this.setState({historyStack: historyStack});
             changeCategory(value, historyStack);
         }
     }
