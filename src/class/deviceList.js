@@ -43,13 +43,13 @@ class deviceList extends Component {
                                 let textB = b.toUpperCase();
                                 return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                             }).map((key, index) =>
-                            currentSubCategories[key].name !== undefined
+                            currentSubCategories[key]['details'] !== undefined
                                 ?
-                                currentSubCategories[key].children
+                                currentSubCategories[key]['details'].children.length
                                     ?
-                                    <FolderItem key={key} name={currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].img} />
+                                    <FolderItem key={key} name={key} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].details.image.thumbnail} />
                                     :
-                                    <DeviceItem key={key} name={currentSubCategories[key].name} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].img} />
+                                    <DeviceItem key={key} name={key} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].details.image.thumbnail} />
                                 :
                                 <span key={key} />
                             )}

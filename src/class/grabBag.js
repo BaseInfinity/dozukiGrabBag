@@ -67,31 +67,35 @@ class GrabBag extends Component {
         const { removeDevice } = this.props;
 
         //eslint-disable-next-line
-        if (confirm("Are you sure you want to remove '" + item.name + "(" + item.myDeviceId + ")" + "' from your Grab Bag?")) {
+        if (confirm("Are you sure you want to remove '" + item.details.topic_info.name + " (" + item.itemId + ")" + "' from your Grab Bag?")) {
             removeDevice(item);
         }
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
     }
 
     /**
      * genListItem()
      *
-     * @param name
-     * @param index
+     * @param key
      * @param data
      * @param onClick
+     *
      * @returns {XML}
      */
-    static genListItem(name, index, data, onClick) {
-        let key = name + index;
+    static genListItem(key, data, onClick) {
+        const name = data.details.topic_info.name;
+        const src = data.details.image.thumbnail;
+
         return (
             <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key={key}>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={data.name} onClick={onClick}>
-                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={data.name}>
-                        &nbsp;{data.name}
+                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={onClick}>
+                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={name}>
+                        {name}
                     </div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
-                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={data.img} alt='' />
+                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={src} alt='' />
                     </div>
                 </div>
             </div>
@@ -104,11 +108,11 @@ class GrabBag extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const { canDrop, isOver, connectDropTarget } = this.props;
+        const { canDrop, isOver, connectDropTarget, myDevices } = this.props;
         const isActive = canDrop && isOver;
 
         let noDevices = '';
-        if (!this.props.myDevices || !this.props.myDevices.length) {
+        if (Object.keys(myDevices).length === 0 && myDevices.constructor === Object) {
             noDevices = <p>You have no devices at this time.</p>;
         }
 
@@ -118,7 +122,6 @@ class GrabBag extends Component {
         } else if (canDrop) {
             boxShadow = '0 0 2px red';
         }
-
         return connectDropTarget(
             <div className='dozuki_grabbag_container'>
                 <h3>Your Devices</h3>
@@ -127,8 +130,14 @@ class GrabBag extends Component {
                     <section className='dozuki_grabbag_device_list_section'>
                         <div className="row" role="row">
                             <div className="container-fluid">
-                                {this.props.myDevices.map((key, index) =>
-                                    GrabBag.genListItem(key.name, index, this.props.myDevices[index], GrabBag.handleOnClick.bind(this, this.props.myDevices[index]))
+                                {Object.keys(myDevices)
+                                    .sort((a,b) => {
+                                        let textA = a.toUpperCase();
+                                        let textB = b.toUpperCase();
+                                        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                                    })
+                                    .map((key, index) =>
+                                    GrabBag.genListItem(key, myDevices[key], GrabBag.handleOnClick.bind(this, myDevices[key]))
                                 )}
                             </div>
                         </div>

@@ -4,7 +4,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import DeviceListContainer from './deviceListContainer.js';
 import GrabBag from './grabBag.js';
 import DataAPI from './dataAPI.js';
-import historyItem from './historyItem.js';
 
 /**
  * GrabBagContainer is the outer most container... is the conduit between the 'grab bag' and the 'device list'.
@@ -20,7 +19,7 @@ class GrabBagContainer extends Component {
         super(props);
 
         this.state = {
-            myDevices: [],
+            myDevices: {},
             currentCategoryName: 'All',
             currentSubCategories: {},
             nextDeviceId: 1,
@@ -67,17 +66,9 @@ class GrabBagContainer extends Component {
      */
     addDevice(deviceName) {
         const {nextDeviceId, currentSubCategories, myDevices} = this.state;
-        let device         = Object.assign({}, currentSubCategories[deviceName]);
-        device.myDeviceId  = nextDeviceId;
-
-        myDevices.push(new historyItem({catName: device.name, imgId: device.id, imgGuid: device.guid, imgUrl: device.img, catChildren: device.children, myDeviceId: device.myDeviceId}));
-
-        // Grab bag is always alpha numeric sorted
-        myDevices.sort((a,b) => {
-            let textA = a.name.toUpperCase();
-            let textB = b.name.toUpperCase();
-            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-        });
+        let item = Object.assign({}, currentSubCategories[deviceName]);
+        item.itemId = nextDeviceId;
+        myDevices[deviceName + nextDeviceId] =  Object.assign(item);
 
         this.setState({myDevices: myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
 
@@ -90,20 +81,16 @@ class GrabBagContainer extends Component {
      * @param device
      */
     removeDevice(device) {
-        var foundIndex = null;
-        this.state.myDevices.find((deviceToCheck, index) => {
-            if (deviceToCheck.myDeviceId === device.myDeviceId) {
-                foundIndex = index;
+        let {myDevices} = this.state;
+
+        Object.keys(myDevices).forEach((key, index) => {
+            if (myDevices[key].itemId === device.itemId) {
+                delete myDevices[key];
+                this.setState({'myDevices': myDevices}, () => {
+                    this.localStorageOut();
+                });
             }
-            return deviceToCheck.myDeviceId === device.myDeviceId;
         });
-        if (foundIndex !== null) {
-            let newDevices = [].concat(this.state.myDevices);
-            newDevices.splice(foundIndex,1);
-            this.setState({'myDevices': newDevices}, () => {
-                this.localStorageOut();
-            });
-        }
     }
 
     /**
@@ -115,25 +102,13 @@ class GrabBagContainer extends Component {
             if (data !== null) {
                 // Store the initial baseData in the object state.
                 this.setState({'baseData': data});
-
                 // Loop trough the root's direct decedents within the baseData and get the image details.
                 for (let catName in data) {
                     this.state.dataAPI.getCategoryItem(catName, (dataSub) => {
-
                         // update the baseData items to have a 'details' value as the image data for each comes back.
                         let newBaseData = this.state.baseData;
-                        newBaseData[catName]['details'] = dataSub;
-
-                        // Also, populate the currentSubCategories (what the device list displays) while we are here.
-                        let currentSubCategories = this.state.currentSubCategories;
-                        currentSubCategories[catName] = new historyItem({
-                            catName: catName,
-                            imgId: dataSub['image']['id'],
-                            imgGuid: dataSub['image']['guid'],
-                            imgUrl: dataSub['image']['thumbnail'],
-                            catChildren: dataSub.children.length
-                        });
-                        this.setState({'baseData': newBaseData, 'currentSubCategories': currentSubCategories});
+                        newBaseData[catName].details = dataSub;
+                        this.setState({'baseData': newBaseData, 'currentSubCategories': newBaseData});
                     });
                 }
             } else {
@@ -158,19 +133,20 @@ class GrabBagContainer extends Component {
      * localStorageIn() will store the grab bag in local web storage, if available.
      */
     localStorageIn() {
-        let myDevicesIn      = [];
+        let myDevicesIn      = {};
         let myNextDeviceIdIn = 1;
 
         if (typeof(Storage) !== 'undefined') {
             let devicesIn = localStorage.getItem('dozuki_grabbag_mydevices');
             if (devicesIn !== null && devicesIn !== undefined) {
-                let myDevicesRAW = JSON.parse(devicesIn);
-                myDevicesRAW.forEach((deviceItem) => {
-                    myDevicesIn.push(new historyItem({catName: deviceItem.name, imgId: deviceItem.id, imgGuid: deviceItem.guid, imgUrl: deviceItem.img, catChildren: deviceItem.children, myDeviceId: deviceItem.myDeviceId}));
+                myDevicesIn = JSON.parse(devicesIn);
+                Object.keys(myDevicesIn).sort((a,b) => {
+                    let textA = a.toUpperCase();
+                    let textB = b.toUpperCase();
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                }).forEach((key) => {
+                    myNextDeviceIdIn = myNextDeviceIdIn < myDevicesIn[key].itemId ? myDevicesIn[key].itemId + 1 : myNextDeviceIdIn;
                 });
-            }
-            if (myDevicesIn.length >= 1) {
-                myNextDeviceIdIn = myDevicesIn[myDevicesIn.length - 1].myDeviceId + 1;
             }
         }
         this.setState({myDevices: myDevicesIn, nextDeviceId: myNextDeviceIdIn});
@@ -197,7 +173,7 @@ class GrabBagContainer extends Component {
      *
      * @returns {*}
      */
-    getCategoryImageDataPointer(historyStack, newCategory) {
+    getCategoryImageDataPointer(newCategory, historyStack) {
         let dataPointer    = this.state.baseData;
         let myHistoryStack = historyStack.slice();
         let catName        = myHistoryStack.shift();
@@ -216,8 +192,6 @@ class GrabBagContainer extends Component {
      * @param dataPointer
      */
     cacheCategoryImageData(dataPointer) {
-        let currentSubCategories = {};
-
         // Get the level's data (if we don't already have it)
         for (let catName in dataPointer) {
             // if the details data is not there, try to get it.
@@ -225,32 +199,12 @@ class GrabBagContainer extends Component {
                 this.state.dataAPI.getCategoryItem(catName, (dataSub) => {
                     // As the results come back, stash them in the 'details' offset of the associated item in the tree (baseData).
                     dataPointer[catName]['details'] = dataSub;
+
                     // Populate the currentSubCategories (what the device list displays).
-                    this.addHistoryItemToCurrentSubCategories(catName, dataSub, currentSubCategories);
+                    this.setState({currentSubCategories: dataPointer});
                 });
-            } else if (catName !== 'details') { // Don't get image data for the 'details' offset.
-                // Populate the currentSubCategories (what the device list displays).
-                this.addHistoryItemToCurrentSubCategories(catName, dataPointer[catName]['details'], currentSubCategories);
             }
         }
-    }
-
-    /**
-     * addHistoryItemToCurrentSubCategories()
-     *
-     * @param catName
-     * @param dataSub
-     * @param currentSubCategories
-     */
-    addHistoryItemToCurrentSubCategories(catName, dataSub, currentSubCategories) {
-        currentSubCategories[catName] = new historyItem({
-            catName: catName,
-            imgId: dataSub['image']['id'],
-            imgGuid: dataSub['image']['guid'],
-            imgUrl: dataSub['image']['thumbnail'],
-            catChildren: dataSub.children.length
-        });
-        this.setState({currentSubCategories});
     }
 
     /**
@@ -261,43 +215,15 @@ class GrabBagContainer extends Component {
      */
     updateCurrentSubCategories(newCategory, historyStack) {
         if (!newCategory || newCategory === 'All') {
-            let currentSubCategories = {};
-            for (let catName in this.state.baseData) {
-                this.addSubCategory(this.state.baseData[catName]['details'], currentSubCategories, catName);
-            }
+            const {baseData} = this.state;
+            this.setState({'currentSubCategories': baseData});
         } else {
             // Reuse the data in the baseData if available
-            let dataPointer = this.getCategoryImageDataPointer(historyStack, newCategory);
+            let dataPointer = this.getCategoryImageDataPointer(newCategory, historyStack);
             this.cacheCategoryImageData(dataPointer);
-        }
-    }
 
-    /**
-     * addSubCategory()
-     *
-     * @param catData
-     * @param currentSubCategories
-     * @param catName
-     */
-    addSubCategory(catData, currentSubCategories, catName) {
-        if (catData['image'] !== 'undefined' && catData['image'] !== null) {
-            currentSubCategories[catName] = new historyItem({
-                catName: catName,
-                imgId: catData['image']['id'],
-                imgGuid: catData['image']['guid'],
-                imgUrl: catData['image']['thumbnail'],
-                catChildren: catData.children.length
-            });
-        } else {
-            currentSubCategories[catName] = new historyItem({
-                catName: catName,
-                imgId: '',
-                imgGuid: '',
-                imgUrl: '/images/DeviceNoImage_300x225.jpg',
-                catChildren: 0
-            });
+            this.setState({'currentSubCategories': dataPointer});
         }
-        this.setState({currentSubCategories});
     }
 }
 

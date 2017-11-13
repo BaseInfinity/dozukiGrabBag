@@ -68,14 +68,15 @@ class deviceListContainer extends Component {
         } else {
              // only check for add if not 'back'
              // only allow to add tips... this is my definition of a 'device'... could use improvement
-            if (!currentSubCategories[value].children) {
+            if (!currentSubCategories[value].details.children.length) {
                 addDevice(value);
                 return;
             }
 
             // to child
             historyStack.push(currentCategoryName);
-            this.setState({historyStack: historyStack});
+// TODO: IS THIS STATE NEEDED?
+//            this.setState({historyStack: historyStack});
             changeCategory(value, historyStack);
         }
     }
