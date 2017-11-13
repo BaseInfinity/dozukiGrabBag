@@ -7,7 +7,13 @@ import DataAPI from './dataAPI.js';
 
 /**
  * GrabBagContainer is the outer most container... is the conduit between the 'grab bag' and the 'device list'.
- * Also, it attempts to store the grab bag in local web storage.
+ *
+ *  Some of the things that the GrabBagContainer does:
+ *   1) Attempts to read the grab bag from local web storage on mount.
+ *   2) Attempts to pull the catalog tree from the API on mount.
+ *   3) Attempts to store the grab bag in local web storage when items are added or removed.
+ *   4) Manages the pulling of item images from the API. (once per session, on demand)
+ *
  */
 class GrabBagContainer extends Component {
     /**
@@ -19,10 +25,42 @@ class GrabBagContainer extends Component {
         super(props);
 
         this.state = {
+            /**
+             * baseData will contain the category tree pulled from the API, after mount.
+             *
+             *  This tree structure serves as the foundation for device list navigation and populating.
+             *  As needed for display, the nodes will have a 'details' element added is are the result of
+             *  additional API pulls.
+             */
+            baseData: null,
+            /**
+             * myDevices is a list of data structures that are the 'details' elements pulled from the baseData.
+             *
+             *  The list is used by the grabBag but, it is managed here.
+             */
             myDevices: {},
-            currentCategoryName: 'All',
+            /**
+             * currentSubCategories is a list of data structures that are the 'details' elements pulled from
+             * the baseData.
+             *
+             *  The list is used by the deviceList but, it is managed here.
+             */
             currentSubCategories: {},
+            /**
+             * currentCategoryName keeps track of the current category name.
+             */
+            currentCategoryName: 'All',
+            /**
+             * nextDeviceId is the next value to be used for the itemId for items in teh grabBag.
+             */
             nextDeviceId: 1,
+            /**
+             * deviceListMessage is used to communicate failures to the user, via the device list.
+             */
+            deviceListMessage: 'Looking for devices...',
+            /**
+             * dataApi is used to pull data from the API.
+             */
             dataAPI: new DataAPI()
         };
     }
@@ -43,7 +81,7 @@ class GrabBagContainer extends Component {
                             <GrabBag myDevices={myDevices} removeDevice={this.removeDevice.bind(this)}></GrabBag>
                         </div>
                         <div className="col-xs-12 col-sm-6">
-                            <DeviceListContainer addDevice={this.addDevice.bind(this)} changeCategory={this.changeCategory.bind(this)} currentCategoryName={this.state.currentCategoryName} currentSubCategories={this.state.currentSubCategories}></DeviceListContainer>
+                            <DeviceListContainer addDevice={this.addDevice.bind(this)} changeCategory={this.changeCategory.bind(this)} currentCategoryName={this.state.currentCategoryName} currentSubCategories={this.state.currentSubCategories} deviceListMessage={this.state.deviceListMessage}></DeviceListContainer>
                         </div>
                     </div>
                 </div>
@@ -55,7 +93,10 @@ class GrabBagContainer extends Component {
      * componentDidMount() attempts to read the grab bag from local web storage, and attempts to get the initial tree data for the device list.
      */
     componentDidMount() {
+        // Pull in grab bag data if it exists.
         this.localStorageIn();
+
+        // Pull in device list data if possible.
         this.pullInitialTreeDataFromAPI();
     }
 
@@ -66,11 +107,21 @@ class GrabBagContainer extends Component {
      */
     addDevice(deviceName) {
         const {nextDeviceId, currentSubCategories, myDevices} = this.state;
-        let item = Object.assign({}, currentSubCategories[deviceName]);
-        item.itemId = nextDeviceId;
-        myDevices[deviceName + nextDeviceId] =  Object.assign(item);
 
-        this.setState({myDevices: myDevices, nextDeviceId: parseInt(nextDeviceId, 10) + 1});
+        // Make a copy of an item object by looking it up in the current categories using the deviceName.
+        let item = Object.assign({}, currentSubCategories[deviceName]);
+
+        // Add the itemId to the object.
+        item.itemId = nextDeviceId;
+
+        // Add the item object to myDevices.
+        myDevices[deviceName + nextDeviceId] =  item;
+
+        // Increment the next device id
+        const newNextDeviceId = nextDeviceId + 1;
+
+        // Store the new next device id, and trigger a refresh to show the item in the grab bag.
+        this.setState({'nextDeviceId': newNextDeviceId});
 
         // Store the grab bag (with the new device in it) in the local web store
         this.localStorageOut();
@@ -83,10 +134,14 @@ class GrabBagContainer extends Component {
     removeDevice(device) {
         let {myDevices} = this.state;
 
-        Object.keys(myDevices).forEach((key, index) => {
+        // Find the item in the list by matching itemId and delete it.
+        Object.keys(myDevices).forEach((key) => {
             if (myDevices[key].itemId === device.itemId) {
+                // Found a match... delete the it.
                 delete myDevices[key];
+                // Update myDevices and trigger a refresh to show that the item was removed.
                 this.setState({'myDevices': myDevices}, () => {
+                    // Safe to store the myDevices to local storage now.
                     this.localStorageOut();
                 });
             }
@@ -112,8 +167,7 @@ class GrabBagContainer extends Component {
                     });
                 }
             } else {
-                // failed to get the base data
-                // TODO : Tell user to refresh the browser?
+                this.setState({'deviceListMessage': 'Failed to find any devices.  Try refreshing your browser.'});
             }
         });
     }

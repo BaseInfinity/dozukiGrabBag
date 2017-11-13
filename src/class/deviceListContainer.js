@@ -12,7 +12,8 @@ const propTypes = {
     currentCategoryName: PropTypes.string.isRequired,
     currentSubCategories: PropTypes.object.isRequired,
     addDevice: PropTypes.func.isRequired,
-    changeCategory: PropTypes.func.isRequired
+    changeCategory: PropTypes.func.isRequired,
+    deviceListMessage: PropTypes.string.isRequired
 };
 
 /**
@@ -37,13 +38,13 @@ class deviceListContainer extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {currentSubCategories} = this.props;
+        const {currentSubCategories, deviceListMessage} = this.props;
         const {historyStack}         = this.state;
 
         return (
             <div className='dozuki_grabbag_device_list_container'>
                 <h3>Browse Devices</h3>
-                <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} onChange={this.onChange.bind(this)}/>
+                <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} deviceListMessage={deviceListMessage} onChange={this.onChange.bind(this)}/>
             </div>
         );
     }

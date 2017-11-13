@@ -12,7 +12,8 @@ import DeviceItem from './deviceItem.js';
 const propTypes = {
     currentSubCategories: PropTypes.object.isRequired,
     historyStack: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    deviceListMessage: PropTypes.string.isRequired
 };
 
 /**
@@ -25,11 +26,16 @@ class deviceList extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {currentSubCategories, historyStack} = this.props;
+        const {currentSubCategories, historyStack, deviceListMessage} = this.props;
 
         let back = <div />;
         if (historyStack.length) {
             back = <BackItem onItemClick={this.onItemClick.bind(this)} />;
+        }
+
+        let noDevices = '';
+        if (Object.keys(currentSubCategories).length === 0 && currentSubCategories.constructor === Object) {
+            noDevices = <p>{deviceListMessage}</p>;
         }
 
         return (
@@ -38,6 +44,7 @@ class deviceList extends Component {
                     <div className="row" role="row">
                         <div className="container-fluid">
                             {back}
+                            {noDevices}
                             {Object.keys(currentSubCategories).sort((a,b) => {
                                 let textA = a.toUpperCase();
                                 let textB = b.toUpperCase();
