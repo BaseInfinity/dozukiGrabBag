@@ -176,9 +176,11 @@ class GrabBagContainer extends Component {
      * localStorageOut() will store the grab bag in local web storage, if available.
      */
     localStorageOut() {
+        // Check to make sure it is supported.
         if (typeof(Storage) !== 'undefined') {
             const {myDevices} = this.state;
 
+            // Store in local web storage a JSON version of the structure.
             localStorage.setItem('dozuki_grabbag_mydevices', JSON.stringify(myDevices));
         }
     }
@@ -187,23 +189,32 @@ class GrabBagContainer extends Component {
      * localStorageIn() will store the grab bag in local web storage, if available.
      */
     localStorageIn() {
-        let myDevicesIn      = {};
-        let myNextDeviceIdIn = 1;
-
+        // Check to make sure it is supported.
         if (typeof(Storage) !== 'undefined') {
+            let {nextDeviceId} = this.state;
+            let myDevicesIn    = {};
+
+            // Read from local web storage a JSON version of the structure.
             let devicesIn = localStorage.getItem('dozuki_grabbag_mydevices');
+
+            // Confirm that we got something before continuing.
             if (devicesIn !== null && devicesIn !== undefined) {
+                // Parse the JSON package back into an object we can work with.
                 myDevicesIn = JSON.parse(devicesIn);
+                // Sort the results.
                 Object.keys(myDevicesIn).sort((a,b) => {
                     let textA = a.toUpperCase();
                     let textB = b.toUpperCase();
                     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                 }).forEach((key) => {
-                    myNextDeviceIdIn = myNextDeviceIdIn < myDevicesIn[key].itemId ? myDevicesIn[key].itemId + 1 : myNextDeviceIdIn;
+                    // Increment the nextDeviceId if needed.
+                    nextDeviceId = nextDeviceId < myDevicesIn[key].itemId ? myDevicesIn[key].itemId + 1 : nextDeviceId;
                 });
+                this.setState({myDevices: myDevicesIn, nextDeviceId: nextDeviceId});
             }
+        } else {
+            // TODO: Tell the user that they wont be able to save their grab bag if they don't turn on cookies?
         }
-        this.setState({myDevices: myDevicesIn, nextDeviceId: myNextDeviceIdIn});
     }
 
     /**
@@ -215,6 +226,7 @@ class GrabBagContainer extends Component {
     changeCategory(newCategory, historyStack) {
         // update the current category name, and wipe out the currentSubCategories before repopulating
         this.setState({currentCategoryName: newCategory, currentSubCategories: {}});
+
         // repopulate the currentSubCategories
         this.updateCurrentSubCategories(newCategory, historyStack);
     }
