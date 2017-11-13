@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import DeviceList from './deviceList.js';
 import '../css/deviceListContainer.css';
 
+const STRING_DEVICELIST_TITLE  = 'Browse Devices';
+
 /**
  * propTypes - Setup required properties.
  *
@@ -43,7 +45,7 @@ class deviceListContainer extends Component {
 
         return (
             <div className='dozuki_grabbag_device_list_container'>
-                <h3>Browse Devices</h3>
+                <h3>{STRING_DEVICELIST_TITLE}</h3>
                 <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} deviceListMessage={deviceListMessage} onChange={this.onChange.bind(this)}/>
             </div>
         );
