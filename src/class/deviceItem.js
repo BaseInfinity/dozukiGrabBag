@@ -70,9 +70,9 @@ class deviceItem extends Component {
     render() {
         const {connectDragSource, connectDragPreview, name, img, childCount, guideCount} = this.props;
 
-        let itemTypeMark = '\uD83D\uDCBC'; // BRIEFCASE
+        let itemTypeMark = ''; // Could find a good one for leaves.  Tried briefcase... nothing is better.
         if (childCount) {
-            itemTypeMark = '\uD83D\uDCC2'; // FOLDER
+            itemTypeMark = "\uD83D\uDCC1"; // FOLDER
         }
         return connectDragSource(
             <div className='dozuki_grabbag_device_list_item_container'>
