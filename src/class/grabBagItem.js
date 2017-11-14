@@ -58,7 +58,14 @@ const propTypes = {
    // modalTransition: PropTypes.shape(Fade.propTypes),
 };
 
+/**
+ * grabBagItem
+ */
 class grabBagItem extends Component {
+    /**
+     *
+     * @param props
+     */
     constructor(props) {
         super(props);
 
@@ -67,6 +74,9 @@ class grabBagItem extends Component {
         this.toggle = this.toggle.bind(this);
     }
 
+    /**
+     * toggle
+     */
     toggle() {
         this.setState({
             modal: !this.state.modal
@@ -85,7 +95,7 @@ class grabBagItem extends Component {
 
         return (
             <div className='dozuki_grabbag_device_list_item_container'>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
+                <div className='dozuki_grabbag_device_list_section_item' value={name} onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title ' title={name}>
                         {name}
                     </div>
@@ -103,7 +113,7 @@ class grabBagItem extends Component {
                     <ModalBody>
                         <div className="dozuki_grabbag_device_list_section_item_details" id={data.itemId}>
                             {data.details.guides.map((guide, index) =>
-                                <div key={index}><a target="_blank" href={guide.url} title={guide.title}>{guide.title}</a>
+                                <div key={index}><a className='dozuki_grabbag_device_guide_link' target="_blank" href={guide.url} title={guide.title}>{guide.title}</a>
                                 </div>
                             )}
                         </div>
@@ -116,6 +126,11 @@ class grabBagItem extends Component {
         )
     }
 
+    /**
+     * onItemDelete()
+     *
+     * @param event
+     */
     onItemDelete(event) {
         const {removeItem} = this.props;
 

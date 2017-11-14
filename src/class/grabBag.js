@@ -5,9 +5,6 @@ import ItemTypes from './itemTypes';
 import GrabBagItem from './grabBagItem';
 import '../css/grabBag.css';
 
-// 1) name and description from the catalog?
-// 2) show link to catalog page?
-
 const DND_CANDROP_COLOR  = 'orange';
 const DND_ISACTIVE_COLOR = 'green';
 
@@ -42,7 +39,7 @@ const cardTarget = {
 /**
  * propTypes
  *
- * @type {{connectDropTarget: (*), isOver: (*), canDrop: (*)}}
+ * @type {{connectDropTarget: (*), isOver: (*), canDrop: (*), grabBagMessage: (*), removeItem: (*), myItems: (*)}}
  */
 const propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
@@ -67,15 +64,6 @@ function collect(connect, monitor) {
         canDrop: monitor.canDrop(),
     };
 }
-
-/**
- * style
- *
- * @type {{textAlign: string}}
- */
-const style = {
-    textAlign: 'center',
-};
 
 /**
  * GrabBag is the grab bag container.  It displays the grab bag and it's contents.
@@ -121,7 +109,7 @@ class GrabBag extends Component {
         return connectDropTarget(
             <div className='dozuki_grabbag_container'>
                 <h3>{STRING_GRABBAG_TITLE}</h3>
-                <div className='dozuki_grabbag_device_list' style={{ ...style, boxShadow }}>
+                <div className='dozuki_grabbag_device_list' style={{ boxShadow }}>
                     {noDevices}
                     <section className='dozuki_grabbag_device_list_section'>
                         <div className="dozuki_grabbag_items_container">

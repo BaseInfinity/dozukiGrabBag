@@ -70,13 +70,13 @@ class deviceItem extends Component {
     render() {
         const {connectDragSource, connectDragPreview, name, img, childCount, guideCount} = this.props;
 
-        let itemTypeMark = ''; // Could find a good one for leaves.  Tried briefcase... nothing is better.
+        let itemTypeMark = ''; // Could not find a good one for leaves.  Tried briefcase... nothing is better.
         if (childCount) {
             itemTypeMark = "\uD83D\uDCC1"; // FOLDER
         }
         return connectDragSource(
             <div className='dozuki_grabbag_device_list_item_container'>
-                <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
+                <div className='dozuki_grabbag_device_list_section_item' value={name} onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title' title={name}>{itemTypeMark} {name}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
                         <div className='dozuki_grabbag_device_list_section_item_bubble'>

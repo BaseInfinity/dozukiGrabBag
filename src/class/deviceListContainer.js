@@ -49,7 +49,7 @@ class deviceListContainer extends Component {
         const {historyStack}         = this.state;
 
         return (
-            <div className='dozuki_grabbag_device_list_container'>
+            <div className='dozuki_grabbag_container'>
                 <h3>{STRING_DEVICELIST_TITLE}</h3>
                 <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} deviceListMessage={deviceListMessage}
                             onBack={this.onBack.bind(this)}

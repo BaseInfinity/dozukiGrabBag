@@ -1,0 +1,81 @@
+.dozuki_grabbag_container {
+    background: white;
+}
+
+.dozuki_grabbag_device_list_item_container {
+    flex-grow: 0;
+    width: 130px;
+    padding: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.dozuki_grabbag_device_list {
+    background: inherit;
+    padding: 10px 10px 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border: solid 1px silver;
+    min-height: 170px;
+    margin-bottom: 20px;
+}
+
+.dozuki_grabbag_items_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.dozuki_grabbag_device_list_section_item {
+    min-height: 100px;
+    margin-top: 10px;
+    margin-right: 5px;
+    background-color: #f0f0f0;
+    padding: 0;
+    box-shadow: 2px 2px 3px gray;
+    min-width: 100px;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.dozuki_grabbag_device_list_section_item_title {
+    overflow: hidden;
+    height: 35px;
+    background-color: transparent;
+    vertical-align: middle;
+    font-size: .8em;
+    color: #888;
+    font-weight: bold;
+    -webkit-transition: background .2s, color .2s;
+    transition: background .2s, color .2s;
+    text-shadow: 1px 1px 1px #fafafa;
+}
+
+.dozuki_grabbag_device_list_section_item:hover .dozuki_grabbag_device_list_section_item_title {
+    color: #555;
+    text-shadow: 1px 1px 1px #f0f0f0;
+}
+
+.dozuki_grabbag_device_list_section_item:hover .dozuki_grabbag_device_list_section_item_image {
+    transform: scale(.9);
+}
+
+.dozuki_grabbag_device_list_section_item_body {
+    padding-top: 5px;
+    background-color: transparent;
+}
+
+.dozuki_grabbag_device_list_section_item_bubble {
+    background: #fff;
+    border-radius: 15px;
+    margin: 0 15px;
+    box-shadow: 2px 2px 3px gray;
+}
+
+.dozuki_grabbag_device_button_container {
+    margin: 15px 15px 10px 15px;
+}
+
+.dozuki_grabbag_action_button {
+}
+

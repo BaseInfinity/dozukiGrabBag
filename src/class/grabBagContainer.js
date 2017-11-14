@@ -4,6 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import DeviceListContainer from './deviceListContainer.js';
 import GrabBag from './grabBag.js';
 import DataAPI from './dataAPI.js';
+import '../css/grabBagContainer.css';
 
 /**
  * These are strings use in the UI.  Candidates for being provided by a language system.
