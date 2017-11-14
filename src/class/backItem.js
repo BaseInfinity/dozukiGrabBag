@@ -28,7 +28,7 @@ class backItem extends Component {
      */
     render() {
         return (
-             <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container' key='back'>
+             <div className='col-xs-12 sol-sm-6 col-md-4 col-lg-3 dozuki_grabbag_device_list_item_container' key='back'>
                  <div className='dozuki_grabbag_device_list_section_item' name='back' value='back' onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title'>{STRING_BACK_TITLE}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>

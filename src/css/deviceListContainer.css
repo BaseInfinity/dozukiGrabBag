@@ -28,7 +28,7 @@
     min-height: 100px;
     margin-top: 10px;
     margin-right: 5px;
-    background-color: #e0e0e0;
+    background-color: #f0f0f0;
     padding: 0;
     box-shadow: 2px 2px 3px gray;
     min-width: 100px;
@@ -39,7 +39,7 @@
 .dozuki_grabbag_device_list_section_item_title {
     overflow: hidden;
     height: 35px;
-    background-color: #e0e0e0;
+    background-color: transparent;
     vertical-align: middle;
     font-size: .9em;
     line-height: 35px;
@@ -78,7 +78,7 @@
 
 .dozuki_grabbag_device_list_section_item_body {
     padding-top: 5px;
-    background-color: #e0e0e0;
+    background-color: transparent;
 }
 
 .dozuki_grabbag_device_list_folder_container:after {
@@ -112,6 +112,5 @@
 }
 
 .dozuki_grabbag_device_list_section_item_details {
-    font-size: .7em;
-    display: none;
+    font-size: 1.2em;
 }

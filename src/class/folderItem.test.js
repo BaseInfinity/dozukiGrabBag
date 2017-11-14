@@ -19,7 +19,7 @@ describe('Test FolderItem', () => {
         ReactDOM.render(<FolderItem name={name} onItemClick={itemClick} img={img} />, wrapper);
 
         // Confirm the generated HTML includes the name and the image
-        expect(wrapper.innerHTML.toString().search('<div class="dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_folder_container" title="test folder item">test folder item</div>')).toEqual(183);
+        expect(wrapper.innerHTML.toString().search('<div class="dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_folder_container" title="test folder item">test folder item</div>')).toEqual(193);
 
         // Confirm the inner content
         expect(title.props.children).toEqual(name);

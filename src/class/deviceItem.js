@@ -66,7 +66,7 @@ class deviceItem extends Component {
         const {connectDragSource, connectDragPreview, name, img} = this.props;
 
         return connectDragSource(
-            <div className='col-xs-6 col-sm-4 col-lg-3 dozuki_grabbag_device_list_item_container'>
+            <div className='col-xs-12 sol-sm-6 col-md-4 col-lg-3 dozuki_grabbag_device_list_item_container'>
                 <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
                     <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={name}>{name}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
