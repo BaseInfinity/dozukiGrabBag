@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {DragDropContextProvider} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { default as TouchBackend } from 'react-dnd-touch-backend';
 import DeviceListContainer from './deviceListContainer.js';
 import GrabBag from './grabBag.js';
 import DataAPI from './dataAPI.js';
@@ -36,6 +37,27 @@ const EMPTY_DATA_LENGTH = 2;
  * @type {number}
  */
 const NEXT_ITEM_ID      = 1;
+
+var isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+};
 
 /**
  * GrabBagContainer is the outer most container... is the conduit between the 'grab bag' and the 'device list'.
@@ -112,8 +134,13 @@ class GrabBagContainer extends Component {
     render() {
         const {myItems, grabBagMessage, currentCategoryName, currentSubCategories, deviceListMessage} = this.state;
 
+        let backend = HTML5Backend;
+        if( isMobile.any() ) {
+            backend = TouchBackend;
+        }
+
         return (
-            <DragDropContextProvider backend={HTML5Backend}>
+            <DragDropContextProvider backend={backend}>
                 <div className="container-fluid">
                     <div className="row" role="row">
                         <div className="col-xs-12 col-sm-6">
