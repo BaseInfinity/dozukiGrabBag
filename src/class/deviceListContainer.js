@@ -13,7 +13,7 @@ const STRING_DEVICELIST_TITLE  = 'Browse Devices';
 /**
  * propTypes - Setup required properties.
  *
- * @type {{currentCategoryName: (*), currentSubCategories: (*), addDevice: (*), changeCategory: (*)}}
+ * @type {{currentCategoryName: (*), currentSubCategories: (*), addDevice: (*), changeCategory: (*), deviceListMessage: (*)}}
  */
 const propTypes = {
     currentCategoryName: PropTypes.string.isRequired,
@@ -51,9 +51,28 @@ class deviceListContainer extends Component {
         return (
             <div className='dozuki_grabbag_device_list_container'>
                 <h3>{STRING_DEVICELIST_TITLE}</h3>
-                <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} deviceListMessage={deviceListMessage} onChange={this.onChange.bind(this)}/>
+                <DeviceList currentSubCategories={currentSubCategories} historyStack={historyStack} deviceListMessage={deviceListMessage}
+                            onBack={this.onBack.bind(this)}
+                            onItemAdd={this.onItemAdd.bind(this)}
+                            onChange={this.onChange.bind(this)}/>
             </div>
         );
+    }
+
+    onBack() {
+        const {historyStack}   = this.state;
+        const {changeCategory} = this.props;
+
+        let previous = historyStack.pop();
+        if (previous !== null && previous !== undefined) {
+            changeCategory(previous, historyStack);
+        }
+    }
+
+    onItemAdd(item) {
+        const {addDevice} = this.props;
+
+        addDevice(item);
     }
 
     /**
@@ -64,24 +83,10 @@ class deviceListContainer extends Component {
      * @param value is the name of the list item that was clicked on.
      */
     onChange(value) {
-        const {currentCategoryName, currentSubCategories, addDevice, changeCategory} = this.props;
+        const {currentCategoryName, changeCategory, currentSubCategories} = this.props;
         const {historyStack} = this.state;
 
-        if ('back' === value) {
-            // to parent
-            let previous = historyStack.pop();
-            if (previous !== null && previous !== undefined) {
-                changeCategory(previous, historyStack);
-            }
-        } else {
-             // only check for add if not 'back'
-             // only allow to add tips... this is my definition of a 'device'... could use improvement
-            if (!currentSubCategories[value].details.children.length) {
-                addDevice(value);
-                return;
-            }
-
-            // to child
+        if (currentSubCategories[value].details.children.length) {        // to child
             historyStack.push(currentCategoryName);
             changeCategory(value, historyStack);
         }

@@ -41,8 +41,7 @@
     height: 35px;
     background-color: transparent;
     vertical-align: middle;
-    font-size: .9em;
-    line-height: 35px;
+    font-size: .8em;
     color: #888;
     font-weight: bold;
     -webkit-transition: background .2s, color .2s;
@@ -81,36 +80,14 @@
     background-color: transparent;
 }
 
-.dozuki_grabbag_device_list_folder_container:after {
-    content: "\f07b";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-    position: absolute;
-    font-size: 6.5em;
-    color: white;
-    top: 54px;
-    left: 50%;
-    margin: 2px 0 0 -40px;
-    text-shadow: 2px 2px 2px silver;
-}
-
-.dozuki_grabbag_device_list_device_container:after {
-    content: "\f0c8";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-    position: absolute;
-    font-size: 5.3em;
-    color: white;
-    top: 53px;
-    left: 50%;
-    margin: 2px 0 0 -32px;
-    text-shadow: 2px 2px 2px silver;
-}
-
 .dozuki_grabbag_device_list_section_item_details {
     font-size: 1.2em;
+}
+.dozuki_grabbag_device_button_container {
+    margin: 15px 15px 10px 15px;
+}
+
+.dozuki_grabbag_device_guide_count {
+    font-size: .6em;
+    color: #888;
 }

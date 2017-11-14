@@ -58,13 +58,6 @@ const propTypes = {
    // modalTransition: PropTypes.shape(Fade.propTypes),
 };
 
-const style = {
-    marginTop: '15px',
-    marginLeft: '15px',
-    marginRight: '15px',
-    marginBottom: '10px'
-};
-
 class grabBagItem extends Component {
     constructor(props) {
         super(props);
@@ -91,16 +84,18 @@ class grabBagItem extends Component {
         const src    = data.details.image.thumbnail;
 
         return (
-            <div className='col-xs-12 sol-sm-6 col-md-4 col-lg-3 dozuki_grabbag_device_list_item_container'>
+            <div className='dozuki_grabbag_device_list_item_container'>
                 <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
-                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={name}>
+                    <div className='dozuki_grabbag_device_list_section_item_title ' title={name}>
                         {name}
                     </div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
-                        <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_imagex' src={src} alt='' />
+                        <div className='dozuki_grabbag_device_list_section_item_bubble'>
+                            <img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_image' src={src} alt='' />
+                        </div>
                     </div>
-                    <div style={{ ...style}}>
-                        <Button onClick={this.onItemDelete.bind(this)} color="primary" size="sm" block>REMOVE</Button>
+                    <div className="dozuki_grabbag_device_button_container">
+                        <Button onClick={this.onItemDelete.bind(this)} color="primary" size="sm" className="dozuki_grabbag_remove_button" block>REMOVE</Button>
                     </div>
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>

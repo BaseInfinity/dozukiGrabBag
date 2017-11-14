@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import BackItem from './backItem.js';
-import FolderItem from './folderItem.js';
 import DeviceItem from './deviceItem.js';
 
 /**
@@ -12,6 +11,8 @@ import DeviceItem from './deviceItem.js';
 const propTypes = {
     currentSubCategories: PropTypes.object.isRequired,
     historyStack: PropTypes.array.isRequired,
+    onBack: PropTypes.func.isRequired,
+    onItemAdd: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     deviceListMessage: PropTypes.string.isRequired
 };
@@ -26,11 +27,11 @@ class deviceList extends Component {
      * @returns {XML} is the content to render; Using React JSX.
      */
     render() {
-        const {currentSubCategories, historyStack, deviceListMessage} = this.props;
+        const {currentSubCategories, historyStack, deviceListMessage, onBack, onItemAdd} = this.props;
 
-        let back = <div />;
+        let back = null;
         if (historyStack.length) {
-            back = <BackItem onItemClick={this.onItemClick.bind(this)} />;
+            back = <BackItem onItemClick={onBack} />;
         }
 
         let noDevices = '';
@@ -41,26 +42,20 @@ class deviceList extends Component {
         return (
             <div className='dozuki_grabbag_device_list'>
                 <section className='dozuki_grabbag_device_list_section'>
-                    <div className="row" role="row">
-                        <div className="container-fluid">
-                            {back}
-                            {noDevices}
-                            {Object.keys(currentSubCategories).sort((a,b) => {
-                                let textA = a.toUpperCase();
-                                let textB = b.toUpperCase();
-                                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-                            }).map((key, index) =>
-                            currentSubCategories[key]['details'] !== undefined
-                                ?
-                                currentSubCategories[key]['details'].children.length
-                                    ?
-                                    <FolderItem key={key} name={key} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].details.image.thumbnail} />
-                                    :
-                                    <DeviceItem key={key} name={key} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].details.image.thumbnail} />
-                                :
-                                <span key={key} />
-                            )}
-                        </div>
+                    <div className="dozuki_grabbag_items_container">
+                        {back}
+                        {noDevices}
+                        {Object.keys(currentSubCategories).sort((a,b) => {
+                            let textA = a.toUpperCase();
+                            let textB = b.toUpperCase();
+                            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                        }).map((key, index) =>
+                        currentSubCategories[key]['details'] !== undefined
+                            ?
+                                <DeviceItem key={key} name={key} onItemAdd={onItemAdd} onItemClick={this.onItemClick.bind(this)} img={currentSubCategories[key].details.image.thumbnail} childCount={currentSubCategories[key].details.children.length} guideCount={currentSubCategories[key].details.guides.length} />
+                            :
+                                null
+                        )}
                     </div>
                 </section>
             </div>

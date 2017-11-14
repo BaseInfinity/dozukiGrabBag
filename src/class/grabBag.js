@@ -124,18 +124,16 @@ class GrabBag extends Component {
                 <div className='dozuki_grabbag_device_list' style={{ ...style, boxShadow }}>
                     {noDevices}
                     <section className='dozuki_grabbag_device_list_section'>
-                        <div className="row" role="row">
-                            <div className="container-fluid">
-                                {Object.keys(myItems)
-                                    .sort((a,b) => {
-                                        let textA = a.toUpperCase();
-                                        let textB = b.toUpperCase();
-                                        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-                                    })
-                                    .map((key, index) =>
-                                    <GrabBagItem key={key} data={myItems[key]} removeItem={GrabBag.removeItem.bind(this, myItems[key])}/>
-                                )}
-                            </div>
+                        <div className="dozuki_grabbag_items_container">
+                            {Object.keys(myItems)
+                                .sort((a,b) => {
+                                    let textA = a.toUpperCase();
+                                    let textB = b.toUpperCase();
+                                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                                })
+                                .map((key, index) =>
+                                <GrabBagItem key={key} data={myItems[key]} removeItem={GrabBag.removeItem.bind(this, myItems[key])}/>
+                            )}
                         </div>
                     </section>
                 </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DragSource } from 'react-dnd';
 import ItemTypes from './itemTypes';
+import {Button} from 'reactstrap';
 
 /**
  * cardSource is used to create a DragSource (react-dnd)
@@ -19,7 +20,7 @@ const cardSource = {
         const dropResult = monitor.getDropResult();
 
         if (dropResult) {
-            props.onItemClick(props.name, null);
+            props.onItemAdd(props.name, null);
         }
     },
 };
@@ -46,7 +47,11 @@ function collect(connect, monitor) {
  */
 const propTypes = {
     name: PropTypes.string.isRequired,
+    img: PropTypes.string.isRequired,
+    onItemAdd: PropTypes.func.isRequired,
     onItemClick: PropTypes.func.isRequired,
+    childCount: PropTypes.number.isRequired,
+    guideCount: PropTypes.number.isRequired,
     // Injected by React DnD:
     isDragging: PropTypes.bool.isRequired,
     connectDragSource: PropTypes.func.isRequired,
@@ -63,19 +68,42 @@ class deviceItem extends Component {
      * @returns {connectDragSource} is the content to render, wrapped in a connectDragSource object; Using React JSX.
      */
     render() {
-        const {connectDragSource, connectDragPreview, name, img} = this.props;
+        const {connectDragSource, connectDragPreview, name, img, childCount, guideCount} = this.props;
 
+        let itemTypeMark = '\uD83D\uDCBC'; // BRIEFCASE
+        if (childCount) {
+            itemTypeMark = '\uD83D\uDCC2'; // FOLDER
+        }
         return connectDragSource(
-            <div className='col-xs-12 sol-sm-6 col-md-4 col-lg-3 dozuki_grabbag_device_list_item_container'>
+            <div className='dozuki_grabbag_device_list_item_container'>
                 <div className='dozuki_grabbag_device_list_section_item' name='currentCategory' value={name} onClick={this.onItemClick.bind(this)}>
-                    <div className='dozuki_grabbag_device_list_section_item_title dozuki_grabbag_device_list_device_container' title={name}>{name}</div>
+                    <div className='dozuki_grabbag_device_list_section_item_title' title={name}>{itemTypeMark} {name}</div>
                     <div className='dozuki_grabbag_device_list_section_item_body'>
-                        {connectDragPreview(<img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_image' src={img} alt='' />)}
+                        <div className='dozuki_grabbag_device_list_section_item_bubble'>
+                            {connectDragPreview(<img className='dozuki_grabbag_device_list_section_item_image dozuki_grabbag_device_list_section_item_device_image' src={img} alt='' />)}
+                        </div>
+                        <div className="dozuki_grabbag_device_button_container">
+                            <Button onClick={this.onItemAdd.bind(this)}  color="primary" size="sm" className="dozuki_grabbag_remove_button" block>ADD</Button>
+                        </div>
+                        <div className="dozuki_grabbag_device_guide_count">
+                            ({guideCount} guides)
+                        </div>
                     </div>
                 </div>
             </div>,
             { dropEffect: 'copy' }
         )
+    }
+
+    onItemAdd(event) {
+        const {name, onItemAdd} = this.props;
+
+        onItemAdd(name, event);
+
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
     }
 
     /**
